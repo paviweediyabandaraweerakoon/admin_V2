@@ -23,12 +23,9 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->foreign('project_id')->references('id')->on('projects')->cascadeOnDelete();
-            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
-            
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
+           
         });
     }
 

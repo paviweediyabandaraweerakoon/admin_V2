@@ -23,7 +23,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
-            $table->foreign('amc_invoice_id')->references('id')->on('amc_invoices')->cascadeOnDelete();
         });
     }
 

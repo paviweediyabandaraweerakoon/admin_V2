@@ -24,11 +24,9 @@ return new class extends Migration
             $table->date('next_amc_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->foreign('customer_id')->references('id')->on('customers')->cascadeOnDelete();
-            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
+    
             
         });
     }

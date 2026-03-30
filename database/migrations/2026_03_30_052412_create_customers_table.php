@@ -19,10 +19,9 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1)->comment('1=active, 0=inactive');
             $table->timestamps();
             $table->softDeletes();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
-            $table->foreign('created_by')->references('id')->on('users')->nullOnDelete();
-            $table->foreign('updated_by')->references('id')->on('users')->nullOnDelete();
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
+            
         });
     }
 
