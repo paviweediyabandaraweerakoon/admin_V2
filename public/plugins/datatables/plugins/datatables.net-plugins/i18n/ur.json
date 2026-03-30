@@ -11,5 +11,39 @@
         "previous": "پچہلا",
         "next": "اگلا",
         "last": "آخري"
+    },
+    "aria": {
+        "sortAscending": "چڑھائی ترتیب دیں",
+        "sortDescending": "نزولی ترتیب دیں"
+    },
+    "autoFill": {
+        "cancel": "منسوخ کریں",
+        "fill": "بھرنا",
+        "fillHorizontal": "افقی پر کریں",
+        "fillVertical": "عمودی کو بھرنے کے"
+    },
+    "buttons": {
+        "collection": "جمع"
+    },
+    "datetime": {
+        "previous": "پچھلی",
+        "next": "اگلی",
+        "hours": "گھنٹے",
+        "minutes": "منٹس",
+        "seconds": "سیکنڈز",
+        "unknown": "نامعلوم",
+        "amPm": [
+            "صبح",
+            "رات"
+        ],
+        "weekdays": [
+            "اتوار",
+            "سوموار",
+            "منگل",
+            "بدھ",
+            "جمعرات",
+            "جمعہ",
+            "ہفتہ"
+        ]
     }
 }

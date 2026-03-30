@@ -117,7 +117,7 @@ ModalOptions = {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\Project Company\New Admin\admin-v2\resources\js\custom\modal.js */"./resources/js/custom/modal.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\admin-V2\resources\js\custom\modal.js */"./resources/js/custom/modal.js");
 
 
 /***/ })

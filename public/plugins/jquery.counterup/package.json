@@ -1,60 +1,15 @@
 {
-  "_args": [
-    [
-      "jquery.counterup@2.1.0",
-      "D:\\Project Company\\New Admin\\admin-v2"
-    ]
-  ],
-  "_from": "jquery.counterup@2.1.0",
-  "_id": "jquery.counterup@2.1.0",
-  "_inBundle": false,
-  "_integrity": "sha1-lmZdAUYDItbSMg+p3eMBPMfRL2A=",
-  "_location": "/jquery.counterup",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "jquery.counterup@2.1.0",
-    "name": "jquery.counterup",
-    "escapedName": "jquery.counterup",
-    "rawSpec": "2.1.0",
-    "saveSpec": null,
-    "fetchSpec": "2.1.0"
-  },
-  "_requiredBy": [
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/jquery.counterup/-/jquery.counterup-2.1.0.tgz",
-  "_spec": "2.1.0",
-  "_where": "D:\\Project Company\\New Admin\\admin-v2",
-  "author": {
-    "name": "Benjamin Intal",
-    "url": "https://github.com/bfintal/"
-  },
-  "bugs": {
-    "url": "https://github.com/ciromattia/jquery.counterup/issues"
-  },
-  "contributors": [
-    {
-      "name": "Jeremy Paris",
-      "url": "https://github.com/digsite"
-    },
-    {
-      "name": "Ciro Mattia Gonano",
-      "email": "ciromattia@gmail.com",
-      "url": "https://github.com/ciromattia"
-    },
-    {
-      "name": "Josh Lee",
-      "url": "https://github.com/Jishaxe"
-    }
-  ],
-  "dependencies": {
-    "jquery": ">=1.5.0",
-    "waypoints": ">=3.0"
-  },
+  "name": "jquery.counterup",
+  "version": "2.1.0",
   "description": "jquery.counterup is a lightweight jQuery plugin that counts up to a targeted number when the number becomes visible.",
-  "homepage": "https://github.com/ciromattia/jquery.counterup#readme",
+  "main": "jquery.counterup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ciromattia/jquery.counterup.git"
+  },
   "keywords": [
     "jquery",
     "counter",
@@ -68,15 +23,19 @@
     "float",
     "currency"
   ],
+  "dependencies": {
+    "jquery": ">=1.5.0",
+    "waypoints": ">=3.0"
+  },
+  "author": "Benjamin Intal (https://github.com/bfintal/)",
+  "contributors": [
+    "Jeremy Paris (https://github.com/digsite)",
+    "Ciro Mattia Gonano <ciromattia@gmail.com> (https://github.com/ciromattia)",
+    "Josh Lee (https://github.com/Jishaxe)"
+  ],
   "license": "GPL-2.0",
-  "main": "jquery.counterup.js",
-  "name": "jquery.counterup",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ciromattia/jquery.counterup.git"
+  "bugs": {
+    "url": "https://github.com/ciromattia/jquery.counterup/issues"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "version": "2.1.0"
+  "homepage": "https://github.com/ciromattia/jquery.counterup#readme"
 }
