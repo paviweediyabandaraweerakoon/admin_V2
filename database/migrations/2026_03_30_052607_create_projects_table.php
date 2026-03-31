@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
-            $table->string('project_name');
+            $table->string('project_name' , 128);
             $table->text('description')->nullable();
             $table->decimal('initial_value', 15, 2)->default(0.00);
-            $table->string('status')->default('active');
+            $table->string('status' , 32)->default('active');
             $table->decimal('amc_percentage', 5, 2)->nullable();
             $table->integer('amc_durations_month')->nullable();
             $table->date('launch_date')->nullable();
@@ -26,11 +26,9 @@ return new class extends Migration
             $table->softDeletes();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
-    
-            
+            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');  
         });
     }
-
     /**
      * Reverse the migrations.
      */

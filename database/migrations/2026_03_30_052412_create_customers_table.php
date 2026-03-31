@@ -13,18 +13,16 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name', 100);
-            $table->string('phone', 20)->nullable();
-            $table->string('country')->nullable();
+            $table->string('company_name', 128);
+            $table->string('phone', 32)->nullable();
+            $table->string('country', 64)->nullable();
             $table->tinyInteger('status')->default(1)->comment('1=active, 0=inactive');
             $table->timestamps();
             $table->softDeletes();
             $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
-            
+            $table->integer('updated_by')->nullable(); 
         });
     }
-
     /**
      * Reverse the migrations.
      */

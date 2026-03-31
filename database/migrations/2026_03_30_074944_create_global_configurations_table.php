@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('global_configurations', function (Blueprint $table) {
             $table->id();
             $table->string('name', 64);
-            $table->string('key_value', 64);
+            $table->string('key_value', 64)->unique();
             $table->text('value')->nullable();
             $table->text('description')->nullable();
             $table->tinyInteger('enabled')->default(1);
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->integer('updated_by')->nullable();
         });
     }
-
     /**
      * Reverse the migrations.
      */
