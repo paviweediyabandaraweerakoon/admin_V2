@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCustomerRequest extends FormRequest
+class CustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -18,16 +18,15 @@ class UpdateCustomerRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule,array<mixed>,string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'company_name' => ['sometimes', 'required', 'string', 'max:128'],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'country' => ['sometimes', 'nullable', 'string', 'max:64'],
-            'status' => ['sometimes', 'required', 'integer', 'in:0,1'],
-    
-        ];
+        'company_name' => ['required', 'string', 'max:128'],
+        'phone'        => ['nullable', 'string', 'max:32'],
+        'country'      => ['nullable', 'string', 'max:64'],
+        'status'       => ['required', 'integer', 'in:0,1'],
+    ];
     }
 }
