@@ -7,6 +7,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ExpiredPasswordController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -67,5 +68,8 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
  */
     Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
     Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.data');
+
+    Route::resource('projects', ProjectController::class)->except('create', 'show', 'edit');
+    Route::get('projects/table/data', [ProjectController::class, 'tableData'])->name('projects.data');
 
 });
