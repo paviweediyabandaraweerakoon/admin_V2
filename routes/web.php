@@ -6,6 +6,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ExpiredPasswordController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,5 +60,12 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
     Route::resource('activity-logs', ActivityLogController::class)->except('create', 'show', 'edit');
     Route::get('activity-logs/table/data', [ActivityLogController::class, 'tableData'])->name('activity-logs.data');
 
-});
+    /**
+ * Customer Management Routes
+ * * Includes standard resource routes (excluding views) and 
+ * a specific endpoint for DataTables JSON responses.
+ */
+    Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
+    Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.data');
 
+});
