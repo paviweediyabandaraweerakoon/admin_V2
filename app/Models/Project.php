@@ -55,6 +55,14 @@ class Project extends Model
     }
 
     /**
+     * Relationship: A project has many AMC invoices.
+     */
+    public function amcInvoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AMCInvoice::class, 'project_id');
+    }
+
+    /**
      * Scope for DataTables Pagination & Ordering
      */
     public function scopeTableData(Builder $query, string $order_column, string $order_by_str, int $start, int $length): Builder

@@ -8,6 +8,7 @@ use App\Http\Controllers\ExpiredPasswordController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\AMCInvoiceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -62,14 +63,24 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
     Route::get('activity-logs/table/data', [ActivityLogController::class, 'tableData'])->name('activity-logs.data');
 
     /**
- * Customer Management Routes
- * * Includes standard resource routes (excluding views) and 
- * a specific endpoint for DataTables JSON responses.
- */
+     * Customer Management Routes
+     * Includes standard resource routes (excluding views) and 
+     * a specific endpoint for DataTables JSON responses.
+    */
     Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
     Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.data');
-
+    /**
+     * Project Management Routes
+     * - Standard resource routes (excluding views)
+     * - DataTables endpoint for JSON data
+     */
     Route::resource('projects', ProjectController::class)->except('create', 'show', 'edit');
     Route::get('projects/table/data', [ProjectController::class, 'tableData'])->name('projects.data');
+
+    /**
+     * AMC Invoice Routes
+     * - Endpoint for manual AMC invoice generation
+     */
+    Route::post('/amc-invoices/store', [AMCInvoiceController::class, 'store'])->name('amc-invoices.store');
 
 });

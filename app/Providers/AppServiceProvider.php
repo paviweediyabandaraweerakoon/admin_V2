@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use App\Models\AMCInvoice;
+use App\Observers\AMCInvoiceObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,7 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
         Schema::defaultStringLength(125);
+
+        // Register the AMCInvoice observer
+        AMCInvoice::observe(AMCInvoiceObserver::class);
     }
 }
