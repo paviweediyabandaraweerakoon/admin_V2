@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Traits\LogsActivityTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\SearchableTrait;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -15,26 +16,18 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class Customer extends Model
 {
-    use SoftDeletes, LogsActivityTrait;
+    use SoftDeletes, LogsActivityTrait, SearchableTrait;
 
     /**
      * Spatie Activity Log settings
      */
     protected static $logName = 'customers';
-    protected static $logAttributes = ['company_name', 'phone', 'country', 'status'];
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'customers';
+    /** Log fillable attributes */
+    protected static $logFillable = true;
+    protected static $logOnlyDirty = true;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    
     protected $fillable = [
         'company_name',
         'phone',
@@ -50,7 +43,7 @@ class Customer extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'status' => 'integer',
+        'status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -67,27 +60,10 @@ class Customer extends Model
     }
 
     /**
-     * Scope for DataTables Global Search
-     * Explicit column selection to avoid 'SELECT *' and improve performance.
-     */
-    public function scopeSearchData(Builder $query, ?string $term): Builder
-    {
-        if (!$term) {
-        return $query;
-    }
-        return $query->where(function ($q) use ($term) {
-            $q->where('id', 'like', "%$term%")
-              ->orWhere('company_name', 'like', "%$term%")
-              ->orWhere('phone', 'like', "%$term%")
-              ->orWhere('country', 'like', "%$term%");
-        });
-    }
-
-    /**
      * Scope for Active Customers only 
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', 1);
+        return $query->where('status', true);
     }
 }

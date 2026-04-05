@@ -16,8 +16,12 @@ class CustomerTableService
         $recordsTotal = Customer::count();
 
         // 2. Global Search using Model Scope
-        $query->searchData($requestData['search']['value'] ?? null);
-        $recordsFiltered = $query->count();
+        
+        $query->searchData(
+            $requestData['search']['value'] ?? null, 
+            ['id', 'company_name', 'phone', 'country'] 
+            );
+            $recordsFiltered = $query->count();
 
         // 3. Ordering
         $columns = ['id', 'company_name', 'phone', 'country', 'status', 'created_at'];

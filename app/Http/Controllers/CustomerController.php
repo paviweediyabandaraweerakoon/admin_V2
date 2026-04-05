@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Http\Requests\CustomerRequest;
 use App\Services\CustomerTableService;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Exception;
+
 
 /*
  * Class CustomerController
@@ -51,20 +53,21 @@ class CustomerController extends Controller
      * @return JsonResponse
      */
 
-    public function store(CustomerRequest $request): JsonResponse
+    public function store(StoreCustomerRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
-            $data['created_by'] = Auth::id();
 
             $customer = Customer::create($data);
 
             return $this->sendResponse($customer, 'Customer successfully added!');
         } catch (Exception $e) {
-            Log::error('Customer store failed', [
-                'error'   => $e->getMessage(),
+            Log::error('Customer management failure', [
+                'module'  => 'customer',
+                'action'  => 'store',
+                'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'payload' => $request->all()
+                'payload' => $request->except(['password', 'password_confirmation'])
             ]);
 
             return $this->sendError('Error occurred while saving customer', [$e->getMessage()]);
@@ -90,20 +93,22 @@ class CustomerController extends Controller
     /**
      * Update the specified customer in storage.
      */
-    public function update(CustomerRequest $request, Customer $customer): JsonResponse
+    public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
         try {
             $data = $request->validated();
-            $data['updated_by'] = Auth::id();
 
             $customer->update($data);
 
             return $this->sendResponse($customer, 'Customer updated successfully');
         } catch (Exception $e) {
-            Log::error('Customer update failed', [
+            Log::error('Customer management failure', [
+                'module'  => 'customer',
+                'action'  => 'update',
                 'id'      => $customer->id,
-                'error'   => $e->getMessage(),
-                'user_id' => Auth::id()
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'payload' => $request->except(['password', 'password_confirmation'])
             ]);
 
             return $this->sendError('Update failed', [$e->getMessage()]);
@@ -120,9 +125,11 @@ class CustomerController extends Controller
 
             return $this->sendResponse(null, 'Customer successfully deleted');
         } catch (Exception $e) {
-            Log::error('Customer deletion failed', [
+            Log::error('Customer management failure', [
+                'module'  => 'customer',
+                'action'  => 'delete',
                 'id'      => $customer->id,
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
                 'user_id' => Auth::id()
             ]);
 
