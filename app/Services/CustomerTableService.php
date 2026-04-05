@@ -38,15 +38,15 @@ class CustomerTableService
             $url = "customers/{$customer->id}";
             
             $edit_btn = $user?->can('customers edit')
-                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary' onclick='edit(this)' 
+                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary customer-edit-btn' 
                     data-id='{$customer->id}' data-name='".e($customer->company_name)."' 
                     data-phone='".e($customer->phone)."' data-country='".e($customer->country)."' 
                     data-status='{$customer->status}'></i>"
                 : "";
 
             $delete_btn = $user?->can('customers delete')
-                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger' 
-                    onclick=\"FormOptions.deleteRecord('{$customer->id}','{$url}','dataTable')\"></i>"
+                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger customer-delete-btn' 
+                    data-id='{$customer->id}' data-url='{$url}'></i>"
                 : "";
 
             $data[] = [

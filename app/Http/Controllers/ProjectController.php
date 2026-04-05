@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Customer;
-use App\Http\Requests\ProjectRequest;
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Services\ProjectTableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,28 +30,33 @@ class ProjectController extends Controller
 
     public function index(): View
     {
-        $customers = Customer::active()->get(); 
+        $customers = Customer::active()->get();
+
         return view('administration.projects.index', compact('customers'));
     }
 
     /**
      * Store a newly created project in the database.
      *
-     * @param ProjectRequest $request
+     * @param  StoreProjectRequest $request
      * @return JsonResponse
      */
 
-    public function store(ProjectRequest $request): JsonResponse
+    public function store(StoreProjectRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
-            $data['created_by'] = Auth::id();
 
             $project = Project::create($data);
 
             return $this->sendResponse($project, 'Project successfully created!');
         } catch (Exception $e) {
-            Log::error('Project store failed', ['user_id' => Auth::id(), 'error' => $e->getMessage()]);
+            Log::error('Project store failed', [
+                'user_id' => Auth::id(),
+                'payload' => $request->safe()->all(),
+                'error' => $e->getMessage(),
+            ]);
+
             return $this->sendError('Error saving project', [$e->getMessage()]);
         }
     }
@@ -64,28 +70,34 @@ class ProjectController extends Controller
 
     public function show(Project $project): JsonResponse
     {
+
         return $this->sendResponse($project->load('customer'), 'Project data retrieved');
     }
 
     /**
      * Update the specified project in the database.
      *
-     * @param UpdateProjectRequest $request
+     * @param ProjectRequest $request
      * @param Project $project
      * @return JsonResponse
      */
 
-    public function update(ProjectRequest $request, Project $project): JsonResponse
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         try {
             $data = $request->validated();
-            $data['updated_by'] = Auth::id();
 
             $project->update($data);
 
             return $this->sendResponse($project, 'Project updated successfully');
         } catch (Exception $e) {
-            Log::error('Project update failed', ['user_id' => Auth::id(), 'id' => $project->id, 'error' => $e->getMessage()]);
+            Log::error('Project update failed', [
+                'user_id' => Auth::id(),
+                'id' => $project->id,
+                'payload' => $request->safe()->all(),
+                'error' => $e->getMessage(),
+            ]);
+
             return $this->sendError('Update failed', [$e->getMessage()]);
         }
     }
@@ -101,6 +113,7 @@ class ProjectController extends Controller
     {
         try {
             $project->delete();
+
             return $this->sendResponse(null, 'Project deleted successfully');
         } catch (Exception $e) {
             return $this->sendError('Delete failed', [$e->getMessage()]);
@@ -118,6 +131,7 @@ class ProjectController extends Controller
     public function tableData(Request $request, ProjectTableService $service): JsonResponse
     {
         $data = $service->getTableData($request->all());
+
         return response()->json($data);
     }
 }

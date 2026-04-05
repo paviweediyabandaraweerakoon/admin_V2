@@ -138,10 +138,20 @@
             FormOptions.initValidation('projectEditForm', []);
         });
 
-        function edit(btn) {
-            let data = btn.dataset;
+        $(document).on('click', '.project-edit-btn', function() {
+            const data = $(this).data();
 
-            // Fill the edit form with project data
+            editProject(data);
+        });
+
+        $(document).on('click', '.project-delete-btn', function() {
+            const id = $(this).data('id');
+            const url = $(this).data('url');
+
+            FormOptions.deleteRecord(id, url, 'dataTable');
+        });
+
+        function editProject(data) {
             let form = $("#projectEditForm");
             form.find('.id').val(data.id);
             form.find('.project_name').val(data.name);
@@ -149,7 +159,7 @@
             form.find('.status').val(data.status);
             form.find('.initial_value').val(data.value);
             form.find('.launch_date').val(data.launch);
-    
+
             form.attr('action', '/projects/' + data.id);
             $('#editModal').modal('show');
         }

@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\LogsActivityTrait;
+use App\Traits\SearchableTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Project Model
@@ -16,12 +19,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Project extends Model
 {
-    use SoftDeletes, LogsActivityTrait;
+    use SoftDeletes, LogsActivityTrait, SearchableTrait;
 
     protected static $logName = 'projects';
-    protected static $logAttributes = ['project_name', 'customer_id', 'status', 'initial_value'];
-
-    protected $table = 'projects';
+    protected static $logFillable = true;
+    protected static $logOnlyDirty = true;
 
     protected $fillable = [
         'customer_id',
@@ -51,15 +53,15 @@ class Project extends Model
      */
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(Customer::class, 'customer_id');
+        return $this->belongsTo(Customer::class);
     }
 
     /**
      * Relationship: A project has many AMC invoices.
      */
-    public function amcInvoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function amcInvoices(): HasMany
     {
-        return $this->hasMany(AMCInvoice::class, 'project_id');
+        return $this->hasMany(AMCInvoice::class);
     }
 
     /**
@@ -72,21 +74,19 @@ class Project extends Model
             ->limit($length);
     }
 
-    /**
-     * Scope for DataTables Global Search
-     */
-    public function scopeSearchData(Builder $query, ?string $term): Builder
+    public function calculateNextAmcDate(): ?Carbon
     {
-        if (!$term) {
-            return $query;
+        if (!$this->launch_date || !$this->amc_durations_month) {
+            $this->next_amc_date = null;
+
+            return null;
         }
 
-        return $query->where(function ($q) use ($term) {
-            $q->where('project_name', 'like', "%$term%")
-              ->orWhere('status', 'like', "%$term%")
-              ->orWhereHas('customer', function ($subQ) use ($term) {
-                  $subQ->where('company_name', 'like', "%$term%");
-              });
-        });
+        $nextAmcDate = Carbon::parse($this->launch_date)
+            ->addMonths((int) $this->amc_durations_month);
+
+        $this->next_amc_date = $nextAmcDate;
+
+        return $nextAmcDate;
     }
 }

@@ -33,6 +33,7 @@ class CustomerController extends Controller
      */
     public function index(): View
     {
+
         return view('administration.customers.index');
     }
 
@@ -62,32 +63,14 @@ class CustomerController extends Controller
 
             return $this->sendResponse($customer, 'Customer successfully added!');
         } catch (Exception $e) {
-            Log::error('Customer management failure', [
-                'module'  => 'customer',
-                'action'  => 'store',
+            Log::error('Customer store failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'payload' => $request->except(['password', 'password_confirmation'])
+                'payload' => $request->safe()->all()
             ]);
 
             return $this->sendError('Error occurred while saving customer', [$e->getMessage()]);
         }
-    }
-
-    /**
-     * Display the specified customer.
-     */
-    public function show(Customer $customer): JsonResponse
-    {
-        return $this->sendResponse($customer, 'Customer data retrieved');
-    }
-
-    /**
-     * Show the form for editing the specified customer.
-     */
-    public function edit(Customer $customer): JsonResponse
-    {
-        return $this->sendResponse($customer, 'Customer data fetched for editing');
     }
 
     /**
@@ -102,13 +85,10 @@ class CustomerController extends Controller
 
             return $this->sendResponse($customer, 'Customer updated successfully');
         } catch (Exception $e) {
-            Log::error('Customer management failure', [
-                'module'  => 'customer',
-                'action'  => 'update',
-                'id'      => $customer->id,
+            Log::error('Customer update failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'payload' => $request->except(['password', 'password_confirmation'])
+                'payload' => $request->safe()->all()
             ]);
 
             return $this->sendError('Update failed', [$e->getMessage()]);
@@ -125,12 +105,9 @@ class CustomerController extends Controller
 
             return $this->sendResponse(null, 'Customer successfully deleted');
         } catch (Exception $e) {
-            Log::error('Customer management failure', [
-                'module'  => 'customer',
-                'action'  => 'delete',
-                'id'      => $customer->id,
+            Log::error('Customer delete failed', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return $this->sendError('Delete failed', [$e->getMessage()]);
@@ -145,4 +122,5 @@ class CustomerController extends Controller
         // Using the injected service to get table data
         return response()->json($this->tableService->getTableData($request->all()));
     }
+
 }

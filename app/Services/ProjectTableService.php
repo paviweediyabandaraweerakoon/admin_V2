@@ -18,24 +18,32 @@ class ProjectTableService
         $order_column = $columns[$requestData['order'][0]['column'] ?? 0] ?? 'id';
         $order_dir = $requestData['order'][0]['dir'] ?? 'desc';
 
-        $query = Project::with('customer');
-        $recordsTotal = Project::count();
+        // Eager load customer relationship and apply search filter
+        $query = Project::with('customer')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('project_name', 'like', "%{$search}%")
+                      ->orWhere('status', 'like', "%{$search}%")
+                      ->orWhereHas('customer', function ($qc) use ($search) {
+                          $qc->where('company_name', 'like', "%{$search}%");
+                      });
+                });
+            });
 
-        // Global Search logic
-        $query->searchData($search);
+        $recordsTotal = Project::count();
         $recordsFiltered = $query->count();
 
         $projects = $query->tableData($order_column, $order_dir, $start, $length)->get();
 
         $data = [];
         foreach ($projects as $project) {
+            $url = "/projects/{$project->id}";
             $edit_btn = $user?->can('projects edit')
-                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary' onclick='edit(this)' data-id='{$project->id}' data-name='".e($project->project_name)."' data-customer='{$project->customer_id}' data-status='{$project->status}' data-value='{$project->initial_value}' data-launch='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."'></i>"
+                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary project-edit-btn' data-id='{$project->id}' data-url='{$url}' data-name='".e($project->project_name)."' data-customer='{$project->customer_id}' data-status='{$project->status}' data-value='{$project->initial_value}' data-launch='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."'></i>"
                 : "";
 
-            $url = "/projects/{$project->id}";
             $delete_btn = $user?->can('projects delete')
-                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger' onclick=\"FormOptions.deleteRecord('{$project->id}','{$url}','dataTable')\"></i>"
+                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger project-delete-btn' data-id='{$project->id}' data-url='{$url}'></i>"
                 : "";
 
             $data[] = [
