@@ -9,6 +9,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\AMCInvoiceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -79,8 +80,17 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
 
     /**
      * AMC Invoice Routes
+     * - Standard resource routes (excluding views)
+     * - DataTables endpoint for JSON data
      * - Endpoint for manual AMC invoice generation
      */
+    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit');
+    Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.data');
     Route::post('/amc-invoices/store', [AMCInvoiceController::class, 'store'])->name('amc-invoices.store');
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/customers', [ReportController::class, 'customer'])->name('reports.customer');
+    Route::get('/reports/projects', [ReportController::class, 'project'])->name('reports.project');
+    Route::get('/reports/amc-invoice', [ReportController::class, 'amcInvoice'])->name('reports.amcInvoice');
 
 });

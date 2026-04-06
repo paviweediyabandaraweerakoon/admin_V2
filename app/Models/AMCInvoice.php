@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\LogsActivityTrait;
+use App\Traits\SearchableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,19 +17,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AMCInvoice extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, LogsActivityTrait, SearchableTrait;
 
     public const STATUS_PENDING = 'pending';
     public const STATUS_PAID = 'paid';
     public const STATUS_CANCELLED = 'cancelled';
 
-    protected $table = 'amc_invoices';
 
     protected $fillable = [
-        'project_id', 'invoice_no', 'description', 'amount', 
-        'status', 'invoice_date', 'due_date', 'paid_at', 
-        'created_by', 'updated_by'
+        'project_id',
+        'invoice_no',
+        'description',
+        'amount',
+        'status',
+        'invoice_date',
+        'due_date',
+        'paid_at',
+        'created_by',
+        'updated_by',
     ];
+
+    // Activity Log Configuration
+    protected static $logName = 'amc_invoices';
+    protected static $logFillable = true;
+    protected static $logOnlyDirty = true;
 
     protected $casts = [
         'amount'       => 'decimal:2',

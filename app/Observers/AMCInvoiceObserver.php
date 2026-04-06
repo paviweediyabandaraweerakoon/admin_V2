@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\AMCInvoice;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * AMCInvoiceObserver
@@ -13,6 +14,14 @@ use Carbon\Carbon;
 
 class AMCInvoiceObserver
 {
+    /**
+     * Handle the AMCInvoice "creating" event.
+     */
+    public function creating(AMCInvoice $amcInvoice): void
+    {
+        $amcInvoice->created_by = Auth::id();
+    }
+
     public function created(AMCInvoice $amcInvoice): void
     {
         $project = $amcInvoice->project;
@@ -26,5 +35,13 @@ class AMCInvoiceObserver
                 'next_amc_date' => $newNextDate
             ]);
         }
+    }
+
+    /**
+     * Handle the AMCInvoice "updating" event.
+     */
+    public function updating(AMCInvoice $amcInvoice): void
+    {
+        $amcInvoice->updated_by = Auth::id();
     }
 }
