@@ -5,29 +5,24 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Traits\LogsActivityTrait;
+use App\Traits\SearchableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\SearchableTrait;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Customer Model
- * * Represents the 'customers' table.
+ * Represents the 'customers' table and its relationships.
  */
 class Customer extends Model
 {
     use SoftDeletes, LogsActivityTrait, SearchableTrait;
 
-    /**
-     * Spatie Activity Log settings
-     */
     protected static $logName = 'customers';
-
-    /** Log fillable attributes */
     protected static $logFillable = true;
     protected static $logOnlyDirty = true;
 
-    
     protected $fillable = [
         'company_name',
         'phone',
@@ -37,11 +32,6 @@ class Customer extends Model
         'updated_by',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'status' => 'boolean',
         'created_at' => 'datetime',
@@ -49,8 +39,23 @@ class Customer extends Model
     ];
 
     /**
+     * Relationship: A customer has many projects.
+     */
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    /**
+     * Relationship: A customer has many AMC invoices.
+     */
+    public function amcInvoices(): HasMany
+    {
+        return $this->hasMany(AMCInvoice::class);
+    }
+
+    /**
      * Scope for DataTables Pagination & Ordering
-     * Explicit column selection to avoid 'SELECT *' and improve performance.
      */
     public function scopeTableData(Builder $query, string $order_column, string $order_by_str, int $start, int $length): Builder
     {
@@ -60,7 +65,7 @@ class Customer extends Model
     }
 
     /**
-     * Scope for Active Customers only 
+     * Scope for Active Customers only
      */
     public function scopeActive(Builder $query): Builder
     {

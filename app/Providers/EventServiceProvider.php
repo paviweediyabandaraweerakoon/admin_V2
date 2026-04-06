@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Customer;
-use App\Observers\CustomerObserver;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+
 
 
 class EventServiceProvider extends ServiceProvider
@@ -20,12 +22,12 @@ class EventServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Register any events for your application.
+     * Register any events for y our application.
      *
      * @return void
      */
     public function boot()
     {
-        Customer::observe(CustomerObserver::class);
+        //
     }
 }

@@ -125,29 +125,34 @@
 
     <script>
         $(document).ready(function() {
-        
             DataTableOption.initDataTable('dataTable', '/customers/table/data');
-            
+
             // Validation
             FormOptions.initValidation('customerCreateForm', []);
             FormOptions.initValidation('customerEditForm', []);
         });
 
-    
-        function edit(btn) {
-            let id = btn.dataset.id;
-            let name = btn.dataset.name;
-            let phone = btn.dataset.phone;
-            let country = btn.dataset.country;
-            let status = btn.dataset.status;
+        $(document).on('click', '.customer-edit-btn', function() {
+            const data = $(this).data();
+            editCustomer(data);
+        });
 
-            $("#customerEditForm").find('.id').val(id);
-            $("#customerEditForm").find('.company_name').val(name);
-            $("#customerEditForm").find('.phone').val(phone);
-            $("#customerEditForm").find('.country').val(country);
-            $("#customerEditForm").find('.status').val(status);
+        $(document).on('click', '.customer-delete-btn', function() {
+            const id = $(this).data('id');
+            const url = $(this).data('url');
 
-            $("#customerEditForm").attr('action', '/customers/' + id);
+            FormOptions.deleteRecord(id, url, 'dataTable');
+        });
+
+        function editCustomer(data) {
+            let form = $("#customerEditForm");
+            form.find('.id').val(data.id);
+            form.find('.company_name').val(data.name);
+            form.find('.phone').val(data.phone);
+            form.find('.country').val(data.country);
+            form.find('.status').val(data.status);
+
+            form.attr('action', '/customers/' + data.id);
             $('#editModal').modal('show');
         }
     </script>

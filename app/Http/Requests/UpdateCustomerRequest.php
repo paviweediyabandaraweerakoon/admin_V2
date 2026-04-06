@@ -1,32 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class UpdateCustomerRequest
+ *
+ * Validates data for updating an existing customer.
+ */
 class UpdateCustomerRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return $this->user()?->can('customers edit') ?? false;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'company_name' => ['required', 'string', 'max:128'],
-            'phone'        => ['nullable', 'string', 'max:32'],
-            'country'      => ['nullable', 'string', 'max:64'],
-            'status'       => ['required', 'boolean'],
+            'company_name' => ['sometimes', 'required', 'string', 'max:128'],
+            'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
+            'country' => ['sometimes', 'nullable', 'string', 'max:64'],
+            'status' => ['sometimes', 'required', 'boolean'],
         ];
     }
 }

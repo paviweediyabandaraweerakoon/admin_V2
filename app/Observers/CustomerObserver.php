@@ -8,19 +8,32 @@ use Illuminate\Support\Facades\Auth;
 class CustomerObserver
 {
     /**
-     * Before save to database when creating a new customer.
+     * Handle the Customer "creating" event.
      */
     public function creating(Customer $customer): void
     {
-       $customer->created_by = Auth::id();
+        $customer->created_by = Auth::id();
     }
 
     /**
-     * Before save to database when updating an existing customer.
+     * Handle the Customer "created" event.
+     */
+    public function created(Customer $customer): void
+    {
+        //
+    }
+
+    /**
+     * Handle the Customer "updating" event.
      */
     public function updating(Customer $customer): void
     {
         $customer->updated_by = Auth::id();
+    }
+
+    public function updated(Customer $customer): void
+    {
+        //
     }
 
     /**
