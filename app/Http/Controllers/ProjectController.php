@@ -62,19 +62,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified project.
-     *
-     * @param Project $project
-     * @return JsonResponse
-     */
-
-    public function show(Project $project): JsonResponse
-    {
-
-        return $this->sendResponse($project->load('customer'), 'Project data retrieved');
-    }
-
-    /**
      * Update the specified project in the database.
      *
      * @param ProjectRequest $request
