@@ -22,7 +22,7 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'customer_id' => ['required', 'exists:customers,id'],
-            'project_name' => ['required', 'string', 'max:128'],
+            'project_name' => ['required', 'string', 'max:128', 'unique:projects,project_name'],
             'description' => ['nullable', 'string'],
             'initial_value' => ['nullable', 'numeric', 'min:0'],
             'status' => ['nullable', 'string', 'max:32'],
