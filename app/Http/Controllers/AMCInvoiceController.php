@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Models\AMCInvoice;
 use App\Services\AMCInvoiceTableService;
+use App\Http\Requests\StoreAMCInvoiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -22,16 +23,14 @@ use Exception;
 class AMCInvoiceController extends Controller
 {
     /**
-     * Display the AMC invoice management page.
+     * Display the AMC invoice generation page with active projects.
      *
      * @return View
      */
     public function index(): View
     {
         $projects = Project::active()->get();
-        $invoices = AMCInvoice::with('project')->latest()->get();
-
-        return view('administration.amc-invoices.index', compact('projects', 'invoices'));
+        return view('administration.amc-invoices.index', compact('projects'));
     }
 
     /**
@@ -40,15 +39,10 @@ class AMCInvoiceController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreAMCInvoiceRequest $request): JsonResponse
     {
         try {
-            $data = $request->validate([
-                'project_id' => ['required', 'exists:projects,id'],
-                'description' => ['nullable', 'string'],
-                'invoice_date' => ['nullable', 'date'],
-                'due_date' => ['nullable', 'date', 'after_or_equal:invoice_date'],
-            ]);
+            $data = $request->validated();
 
             $project = Project::findOrFail($data['project_id']);
 
@@ -61,9 +55,9 @@ class AMCInvoiceController extends Controller
                 'project_id'   => $project->id,
                 'invoice_no'   => 'INV-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6)),
                 'amount'       => $amount,
-                'description'  => "Manual AMC Generation for " . $project->project_name,
-                'invoice_date' => now(),
-                'due_date'     => now()->addDays(14),
+                'description'  => $data['description'] ?? ("Manual AMC Generation for " . $project->project_name),
+                'invoice_date' => $data['invoice_date'],
+                'due_date'     => $data['due_date'],
                 'status'       => AMCInvoice::STATUS_PENDING,
             
             ]);
