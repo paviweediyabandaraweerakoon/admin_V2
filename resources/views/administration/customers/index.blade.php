@@ -66,7 +66,7 @@
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-3 text-dark">
-                    <form method="POST" id="customerCreateForm">
+                    <form method="POST" id="customerCreateForm" action="{{ route('customers.store') }}">
                         @csrf
                         @include('administration.customers.form', ['editable' => false])
                         <div class="float-right mt-3">
@@ -124,8 +124,9 @@
     <script src="{{ asset('js/notifications.js') }}"></script>
 
     <script>
+        // Initialize DataTable and form validations on document ready
         $(document).ready(function() {
-            DataTableOption.initDataTable('dataTable', '/customers/table/data');
+            DataTableOption.initDataTable('dataTable', "{{ route('customers.table.data') }}");
 
             // Validation
             FormOptions.initValidation('customerCreateForm', []);
@@ -147,12 +148,15 @@
         function editCustomer(data) {
             let form = $("#customerEditForm");
             form.find('.id').val(data.id);
-            form.find('.company_name').val(data.name);
+            form.find('.company_name').val(data.company_name);
             form.find('.phone').val(data.phone);
             form.find('.country').val(data.country);
             form.find('.status').val(data.status);
 
-            form.attr('action', '/customers/' + data.id);
+           // Update form action URL with the correct customer ID
+            let updateUrl = "{{ route('customers.update', ':id') }}".replace(':id', data.id);
+            form.attr('action', updateUrl);
+            
             $('#editModal').modal('show');
         }
     </script>

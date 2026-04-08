@@ -69,8 +69,7 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
      * a specific endpoint for DataTables JSON responses.
     */
     Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
-    Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.data');
-    /**
+Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.table.data');    /**
      * Project Management Routes
      * - Standard resource routes (excluding views)
      * - DataTables endpoint for JSON data
