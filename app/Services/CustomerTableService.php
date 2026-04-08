@@ -10,13 +10,12 @@ use Illuminate\Support\Facades\Auth;
  */
 class CustomerTableService
 {
-        /**
-        * Get formatted customer data for DataTables.
-        *
-        * @param array $requestData
-        * @return array
-        */
-        
+    /**
+     * Get formatted customer data for DataTables.
+     *
+     * @param array $requestData
+     * @return array
+     */
     public function getTableData(array $requestData): array
     {
         $user = Auth::user();
@@ -39,14 +38,26 @@ class CustomerTableService
         $data = [];
         foreach ($customers as $customer) {
             $url = "/customers/{$customer->id}";
+
+            // Edit Button - only show if user has edit permission
             $edit_btn = $user?->can('customers edit')
-                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary customer-edit-btn' data-id='{$customer->id}' data-url='{$url}' data-name='".e($customer->company_name)."' data-phone='".e($customer->phone)."' data-country='".e($customer->country)."' data-status='{$customer->status}'></i>"
+                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary customer-edit-btn' 
+                    data-id='{$customer->id}' 
+                    data-company_name='".e($customer->company_name)."' 
+                    data-phone='".e($customer->phone)."' 
+                    data-country='".e($customer->country)."' 
+                    data-status='{$customer->status}'></i>"
                 : "";
 
+            // Delete Button - only show if user has delete permission
             $delete_btn = $user?->can('customers delete')
-                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger customer-delete-btn' data-id='{$customer->id}' data-url='{$url}'></i>"
+                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger customer-delete-btn' 
+                    data-id='{$customer->id}' 
+                    data-url='{$url}' 
+                    data-name='".e($customer->company_name)."'></i>"
                 : "";
 
+            // formatting data array for DataTables
             $data[] = [
                 e($customer->company_name),
                 e($customer->phone),
@@ -57,7 +68,7 @@ class CustomerTableService
                 $customer->created_at->format('Y-m-d H:i'),
                 $edit_btn . $delete_btn
             ];
-        }
+        } 
 
         return [
             "draw" => intval($requestData['draw'] ?? 0),
