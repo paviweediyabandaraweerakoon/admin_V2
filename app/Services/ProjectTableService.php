@@ -5,6 +5,11 @@ namespace App\Services;
 use App\Models\Project;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * Class ProjectTableService
+ *
+ * Service class to handle the retrieval and formatting of project data for DataTables.
+ */
 class ProjectTableService
 {
     public function getTableData(array $requestData): array
@@ -18,17 +23,12 @@ class ProjectTableService
         $order_column = $columns[$requestData['order'][0]['column'] ?? 0] ?? 'id';
         $order_dir = $requestData['order'][0]['dir'] ?? 'desc';
 
-        // Eager load customer relationship and apply search filter
+        // Eager load customer relationship and apply search filter using the SearchableTrait
         $query = Project::with('customer')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('project_name', 'like', "%{$search}%")
-                      ->orWhere('status', 'like', "%{$search}%")
-                      ->orWhereHas('customer', function ($qc) use ($search) {
-                          $qc->where('company_name', 'like', "%{$search}%");
-                      });
-                });
-            });
+            ->searchData($search,
+                ['project_name', 'status', 'initial_value'],
+                ['customer' => ['company_name']]
+            );
 
         $recordsTotal = Project::count();
         $recordsFiltered = $query->count();

@@ -7,11 +7,11 @@ namespace App\Models;
 use App\Traits\LogsActivityTrait;
 use App\Traits\SearchableTrait;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Project Model
@@ -40,12 +40,12 @@ class Project extends Model
     ];
 
     protected $casts = [
-        'initial_value' => 'decimal:2',
+        'initial_value'  => 'decimal:2',
         'amc_percentage' => 'decimal:2',
-        'launch_date' => 'date',
-        'next_amc_date' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'launch_date'    => 'date',
+        'next_amc_date'  => 'date',
+        'created_at'     => 'datetime',
+        'updated_at'     => 'datetime',
     ];
 
     /**
@@ -74,19 +74,16 @@ class Project extends Model
             ->limit($length);
     }
 
-    public function calculateNextAmcDate(): ?Carbon
+    /**
+     * Calculate and set the next AMC date based on the launch date and AMC duration.
+     */
+    public function calculateNextAmcDate(): void
     {
-        if (!$this->launch_date || !$this->amc_durations_month) {
+        if ($this->launch_date && $this->amc_durations_month) {
+            $this->next_amc_date = Carbon::parse($this->launch_date)
+                ->addMonths((int) $this->amc_durations_month);
+        } else {
             $this->next_amc_date = null;
-
-            return null;
         }
-
-        $nextAmcDate = Carbon::parse($this->launch_date)
-            ->addMonths((int) $this->amc_durations_month);
-
-        $this->next_amc_date = $nextAmcDate;
-
-        return $nextAmcDate;
     }
 }

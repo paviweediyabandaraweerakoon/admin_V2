@@ -7,15 +7,21 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectObserver
 {
+    public function saving(Project $project): void
+    {
+        if ($project->isDirty(['launch_date', 'amc_durations_month'])) {
+            $project->calculateNextAmcDate();
+        }
+    }
     /**
      * Handle the Project "creating" event.
      */
     public function creating(Project $project): void
     {
-        $project->created_by = Auth::id();
-        $project->calculateNextAmcDate();
+        if (Auth::check()) {
+            $project->created_by = Auth::id();
+        }
     }
-
     /**
      * Handle the Project "created" event.
      */
@@ -29,24 +35,26 @@ class ProjectObserver
      */
     public function updating(Project $project): void
     {
-        $project->updated_by = Auth::id();
-
-        if ($project->isDirty(['launch_date', 'amc_durations_month'])) {
-            $project->calculateNextAmcDate();
-        }
+        if (Auth::check()) {
+            $project->updated_by = Auth::id();
+            }
     }
 
     public function updated(Project $project): void
     {
         //
     }
-
+    
     /**
-     * Handle the Project "deleted" event.
+     * Handle the Project "deleting" event.
      */
-    public function deleted(Project $project): void
+    public function deleting(Project $project): void
     {
-        //
+        // Soft delete - set updated_by for audit trail
+        if (Auth::check()) {
+        $project->updated_by = Auth::id();
+        $project->saveQuietly();
+        }
     }
 
     /**
@@ -58,7 +66,7 @@ class ProjectObserver
     }
 
     /**
-     * Handle the Project "force deleted" event.
+     * Handle the Project "force deleted" event - no action needed as it's permanently removed.
      */
     public function forceDeleted(Project $project): void
     {
