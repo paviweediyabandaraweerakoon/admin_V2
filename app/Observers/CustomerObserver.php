@@ -37,11 +37,12 @@ class CustomerObserver
     }
 
     /**
-     * Handle the Customer "deleted" event.
+     * Handle the Customer "deleting" event.
      */
-    public function deleted(Customer $customer): void
+    public function deleting(Customer $customer): void
     {
-        //
+        $customer->updated_by = Auth::id();
+        $customer->saveQuietly();
     }
 
     /**
