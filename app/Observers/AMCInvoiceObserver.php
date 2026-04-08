@@ -7,41 +7,74 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 /**
- * AMCInvoiceObserver
+ * Class AMCInvoiceObserver
  *
- * Observes the AMCInvoice model events to perform actions such as updating the next AMC date on invoice creation.
+ * Observes AMCInvoice model events to automatically set created_by and updated_by fields,
+ * and to update the related project's next AMC date when an invoice is created or updated.
  */
-
 class AMCInvoiceObserver
 {
+    /**
+     * Handle the AMCInvoice "saving" event.
+     */
+    public function saving(AMCInvoice $amcInvoice): void
+    {
+        if (Auth::check()) {
+            $amcInvoice->updated_by = Auth::id();
+        }
+    }
+
     /**
      * Handle the AMCInvoice "creating" event.
      */
     public function creating(AMCInvoice $amcInvoice): void
     {
-        $amcInvoice->created_by = Auth::id();
-    }
-
-    public function created(AMCInvoice $amcInvoice): void
-    {
-        $project = $amcInvoice->project;
-
-        if ($project && $project->amc_durations_month > 0) {
-            // Calculate the next AMC date based on the invoice date and the AMC duration in months
-            $newNextDate = Carbon::parse($amcInvoice->invoice_date)
-                                ->addMonths((int)$project->amc_durations_month);
-
-            $project->update([
-                'next_amc_date' => $newNextDate
-            ]);
+        if (Auth::check()) {
+            $amcInvoice->created_by = Auth::id();
         }
     }
 
     /**
-     * Handle the AMCInvoice "updating" event.
+     * Handle the AMCInvoice "created" event.
      */
-    public function updating(AMCInvoice $amcInvoice): void
+    public function created(AMCInvoice $amcInvoice): void
     {
-        $amcInvoice->updated_by = Auth::id();
+        $this->updateProjectNextAmcDate($amcInvoice);
+    }
+
+    /**
+     * Handle the AMCInvoice "updated" event.
+     */
+    public function updated(AMCInvoice $amcInvoice): void
+    {
+        if ($amcInvoice->wasChanged('invoice_date')) {
+            $this->updateProjectNextAmcDate($amcInvoice);
+        }
+    }
+
+    /**
+     * Handle the AMCInvoice "deleting" event.
+     */
+    public function deleting(AMCInvoice $amcInvoice): void
+    {
+        if (Auth::check()) {
+            $amcInvoice->updated_by = Auth::id();
+            $amcInvoice->saveQuietly();
+        }
+    }
+
+    /**
+     * Updates the project's next AMC date.
+     */
+    protected function updateProjectNextAmcDate(AMCInvoice $amcInvoice): void
+    {
+        $project = $amcInvoice->project;
+
+        if ($project && $project->amc_durations_month > 0) {
+            $invoiceDate = Carbon::parse($amcInvoice->invoice_date);
+            $nextAmcDate = $invoiceDate->addMonths((int) $project->amc_durations_month);
+
+            $project->update(['next_amc_date' => $nextAmcDate]);
+        }
     }
 }
