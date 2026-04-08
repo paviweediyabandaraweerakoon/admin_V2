@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Project;
 use App\Models\AMCInvoice;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,18 +28,13 @@ class AMCInvoiceTableService
         $order_column = $columns[$requestData['order'][0]['column'] ?? 0] ?? 'id';
         $order_dir = $requestData['order'][0]['dir'] ?? 'desc';
 
-        // Eager load project relationship and apply search filter
-        $query = AMCInvoice::with('project')
-            ->when($search, function ($query, $search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('invoice_no', 'like', "%{$search}%")
-                      ->orWhere('status', 'like', "%{$search}%")
-                      ->orWhere('amount', 'like', "%{$search}%")
-                      ->orWhereHas('project', function ($qp) use ($search) {
-                          $qp->where('project_name', 'like', "%{$search}%");
-                      });
-                });
-            });
+        // Eager load relationships and apply the search trait
+        $query = AMCInvoice::with(['project.customer'])
+        
+            ->searchData($search,
+               ['invoice_no', 'amount', 'status'],
+               ['project' => ['project_name']]
+            );
 
         $recordsTotal = AMCInvoice::count();
         $recordsFiltered = $query->count();
@@ -65,6 +61,7 @@ class AMCInvoiceTableService
             $data[] = [
                 e($invoice->invoice_no),
                 e($invoice->project?->project_name ?? 'N/A'),
+                e($invoice->project?->customer?->company_name ?? 'N/A'),
                 number_format((float)$invoice->amount, 2),
                 $statusBadge,
                 $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : '-',
