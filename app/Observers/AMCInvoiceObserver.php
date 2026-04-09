@@ -3,17 +3,24 @@
 namespace App\Observers;
 
 use App\Models\AMCInvoice;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AMCInvoiceTableService;
 
 /**
  * Class AMCInvoiceObserver
  *
- * Observes AMCInvoice model events to automatically set created_by and updated_by fields,
- * and to update the related project's next AMC date when an invoice is created or updated.
+ * Observes AMCInvoice model events to automatically set created_by and updated_by fields.
  */
 class AMCInvoiceObserver
 {
+    protected $amcInvoiceService;
+
+    // Dependency injection of the AMCInvoiceTableService to handle business logic related to AMC invoices.
+    public function __construct(AMCInvoiceTableService $amcInvoiceService)
+    {
+        $this->amcInvoiceService = $amcInvoiceService;
+    }
+
     /**
      * Handle the AMCInvoice "saving" event.
      */
@@ -39,7 +46,8 @@ class AMCInvoiceObserver
      */
     public function created(AMCInvoice $amcInvoice): void
     {
-        $this->updateProjectNextAmcDate($amcInvoice);
+
+        $this->amcInvoiceService->updateProjectNextAmcDate($amcInvoice);
     }
 
     /**
@@ -48,7 +56,8 @@ class AMCInvoiceObserver
     public function updated(AMCInvoice $amcInvoice): void
     {
         if ($amcInvoice->wasChanged('invoice_date')) {
-            $this->updateProjectNextAmcDate($amcInvoice);
+        
+            $this->amcInvoiceService->updateProjectNextAmcDate($amcInvoice);
         }
     }
 
@@ -59,22 +68,7 @@ class AMCInvoiceObserver
     {
         if (Auth::check()) {
             $amcInvoice->updated_by = Auth::id();
-            $amcInvoice->saveQuietly();
-        }
-    }
-
-    /**
-     * Updates the project's next AMC date.
-     */
-    protected function updateProjectNextAmcDate(AMCInvoice $amcInvoice): void
-    {
-        $project = $amcInvoice->project;
-
-        if ($project && $project->amc_durations_month > 0) {
-            $invoiceDate = Carbon::parse($amcInvoice->invoice_date);
-            $nextAmcDate = $invoiceDate->addMonths((int) $project->amc_durations_month);
-
-            $project->update(['next_amc_date' => $nextAmcDate]);
+            $amcInvoice->save();
         }
     }
 }

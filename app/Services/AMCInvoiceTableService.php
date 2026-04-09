@@ -5,9 +5,12 @@ namespace App\Services;
 use App\Models\Project;
 use App\Models\AMCInvoice;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 /**
  * Service class to handle AMC invoice table data retrieval and formatting for DataTables.
+ *
+ * Also contains business helpers related to AMC invoices (kept out of observers/controllers).
  */
 class AMCInvoiceTableService
 {
@@ -76,5 +79,29 @@ class AMCInvoiceTableService
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
         ];
+    }
+
+    /**
+     * Update the project's next AMC date using the invoice date and the project's AMC duration.
+     *
+     * If the project exists and has a positive amc_durations_month value and the invoice has an invoice_date,
+     * this method calculates the next AMC date by adding the configured months to the invoice date and
+     * persists the next_amc_date on the related project.
+     *
+     * @param AMCInvoice $amcInvoice
+     * @return void
+     */
+    public function updateProjectNextAmcDate(AMCInvoice $amcInvoice): void
+    {
+        $project = $amcInvoice->project;
+
+        if ($project && (($project->amc_durations_month ?? 0) > 0) && $amcInvoice->invoice_date) {
+            $invoiceDate = Carbon::parse($amcInvoice->invoice_date);
+            $nextAmcDate = $invoiceDate->copy()->addMonths((int) $project->amc_durations_month);
+
+            // Persist in Y-m-d format (adjust if your column expects a Carbon/Date object)
+            $project->next_amc_date = $nextAmcDate->format('Y-m-d');
+            $project->save();
+        }
     }
 }
