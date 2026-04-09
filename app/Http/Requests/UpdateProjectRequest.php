@@ -25,7 +25,7 @@ class UpdateProjectRequest extends FormRequest
         $projectId = $this->route('project');
 
         return [
-            'customer_id' => ['sometimes', 'required', 'exists:customers,id'],
+            'customer_id' => ['required', 'exists:customers,id'],
             
             'project_name' => [
                 'sometimes', 
@@ -36,11 +36,11 @@ class UpdateProjectRequest extends FormRequest
                 ],
                 
             'description' => ['nullable', 'string'],
-            'initial_value' => ['sometimes', 'nullable', 'numeric', 'min:0'],
-            'status' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'amc_percentage' => ['sometimes', 'nullable', 'numeric', 'between:0,99.99'],
-            'amc_durations_month' => ['sometimes', 'nullable', 'integer', 'min:1'],
-            'launch_date' => ['sometimes', 'nullable', 'date'],
+            'initial_value' => ['nullable', 'numeric', 'min:0'],
+            'status' => ['nullable', 'string', 'max:32'],
+            'amc_percentage' => ['nullable', 'numeric', 'between:0,99.99'],
+            'amc_durations_month' => ['nullable', 'integer', 'min:1'],
+            'launch_date' => ['nullable', 'date'],
         ];
     }
 }

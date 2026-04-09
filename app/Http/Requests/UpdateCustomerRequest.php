@@ -21,10 +21,10 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_name' => ['sometimes', 'required', 'string', 'max:128'],
-            'phone' => ['sometimes', 'nullable', 'string', 'max:32'],
-            'country' => ['sometimes', 'nullable', 'string', 'max:64'],
-            'status' => ['sometimes', 'required', 'boolean'],
+            'company_name' => ['required', 'string', 'max:128'],
+            'phone' => ['nullable', 'string', 'max:32'],
+            'country' => ['nullable', 'string', 'max:64'],
+            'status' => ['required', 'boolean'],
         ];
     }
 }
