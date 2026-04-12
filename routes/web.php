@@ -6,6 +6,10 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ExpiredPasswordController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\AMCInvoiceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,5 +63,33 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
     Route::resource('activity-logs', ActivityLogController::class)->except('create', 'show', 'edit');
     Route::get('activity-logs/table/data', [ActivityLogController::class, 'tableData'])->name('activity-logs.data');
 
-});
+    /**
+     * Customer Management Routes
+     * Includes standard resource routes (excluding views) and 
+     * a specific endpoint for DataTables JSON responses.
+    */
+    Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
+Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.table.data');    /**
+     * Project Management Routes
+     * - Standard resource routes (excluding views)
+     * - DataTables endpoint for JSON data
+     */
+    Route::resource('projects', ProjectController::class)->except('create', 'show', 'edit');
+    Route::get('projects/table/data', [ProjectController::class, 'tableData'])->name('projects.data');
 
+    /**
+     * AMC Invoice Routes
+     * - Standard resource routes (excluding views)
+     * - DataTables endpoint for JSON data
+     * - Endpoint for manual AMC invoice generation
+     */
+    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit');
+    Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.data');
+    Route::post('/amc-invoices/store', [AMCInvoiceController::class, 'store'])->name('amc-invoices.store');
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/customers', [ReportController::class, 'customer'])->name('reports.customer');
+    Route::get('/reports/projects', [ReportController::class, 'project'])->name('reports.project');
+    Route::get('/reports/amc-invoice', [ReportController::class, 'amcInvoice'])->name('reports.amcInvoice');
+
+});
