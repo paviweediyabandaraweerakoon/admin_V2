@@ -6,7 +6,6 @@ namespace App\Models;
 
 use App\Traits\LogsActivityTrait;
 use App\Traits\SearchableTrait;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -75,15 +74,24 @@ class Project extends Model
     }
 
     /**
+     * Scope for Active Projects
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', 'active');
+    }
+
+    /**
      * Calculate and set the next AMC date based on the launch date and AMC duration.
      */
     public function calculateNextAmcDate(): void
     {
         if ($this->launch_date && $this->amc_durations_month) {
-            $this->next_amc_date = Carbon::parse($this->launch_date)
-                ->addMonths((int) $this->amc_durations_month);
-        } else {
-            $this->next_amc_date = null;
-        }
+            $this->next_amc_date = $this->launch_date->copy()
+            ->addMonths((int) $this->amc_durations_month);
+            }
+            else {
+                $this->next_amc_date = null;
+                }
     }
 }

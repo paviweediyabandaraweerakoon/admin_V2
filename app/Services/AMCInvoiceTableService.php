@@ -4,8 +4,12 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\AMCInvoice;
+use App\Notifications\UpcomingAMCNotification;
+use Illuminate\Support\Facades\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * Service class to handle AMC invoice table data retrieval and formatting for DataTables.
@@ -79,6 +83,47 @@ class AMCInvoiceTableService
             "recordsFiltered" => $recordsFiltered,
             "data" => $data
         ];
+    }
+
+    /**
+     * Send email reminders for projects with AMC due in 7 days.
+     */
+    public function sendUpcomingAMCReminders(): void
+    {
+        $reminderDate = now()->addDays(7)->toDateString();
+        
+        $projects = Project::active()
+            ->whereDate('next_amc_date', $reminderDate)
+            ->get();
+
+        if ($projects->isNotEmpty()) {
+            $users = User::all(); // Get all users to notify
+            foreach ($projects as $project) {
+                Notification::send($users, new UpcomingAMCNotification($project));
+            }
+        }
+    }
+
+    /**
+     * Creates an invoice from a Project object.
+     */
+    public function createAutomatedInvoice(Project $project): void
+    {
+        $amount = ($project->initial_value > 0 && $project->amc_percentage > 0) 
+            ? ($project->initial_value * ($project->amc_percentage / 100)) 
+            : 0;
+
+        AMCInvoice::create([
+            'project_id'   => $project->id,
+            'invoice_no'   => 'AUTO-' . now()->format('Ymd') . '-' . Str::upper(Str::random(4)),
+            'amount'       => $amount,
+            'description'  => "System Generated AMC Invoice for " . $project->project_name,
+            'invoice_date' => now(),
+            'due_date'     => now()->addDays(14),
+            'status'       => AMCInvoice::STATUS_PENDING,
+        ]);
+        
+        // Observer automatically handles next_amc_date update when this is created.
     }
 
     /**
