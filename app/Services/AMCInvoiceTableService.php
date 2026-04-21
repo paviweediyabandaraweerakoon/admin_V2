@@ -1,16 +1,20 @@
 <?php
 
+
 namespace App\Services;
 
 use App\Models\Project;
 use App\Models\AMCInvoice;
+use App\Models\User;
+use App\Notifications\UpcomingAMCNotification;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 /**
- * Service class to handle AMC invoice table data retrieval and formatting for DataTables.
+ * Service class to handle AMC invoice table data and business logic.
  *
- * Also contains business helpers related to AMC invoices (kept out of observers/controllers).
  */
 class AMCInvoiceTableService
 {
@@ -31,12 +35,10 @@ class AMCInvoiceTableService
         $order_column = $columns[$requestData['order'][0]['column'] ?? 0] ?? 'id';
         $order_dir = $requestData['order'][0]['dir'] ?? 'desc';
 
-        // Eager load relationships and apply the search trait
         $query = AMCInvoice::with(['project.customer'])
-        
             ->searchData($search,
-               ['invoice_no', 'amount', 'status'],
-               ['project' => ['project_name']]
+                ['invoice_no', 'amount', 'status'],
+                ['project' => ['project_name']]
             );
 
         $recordsTotal = AMCInvoice::count();
@@ -81,12 +83,50 @@ class AMCInvoiceTableService
         ];
     }
 
+    public function processAmcAutomation(): void
+    {
+        $today = now()->toDateString();
+        $sevenDaysLater = now()->addDays(7)->toDateString();
+        
+        // Fetch projects with next AMC date today or within the next 7 days
+        $projects = Project::active()
+        ->whereIn('next_amc_date', [$today, $sevenDaysLater])
+        ->get();
+        
+        $users = User::all(); 
+        
+        foreach ($projects as $project) {
+            // Send notification to users about the upcoming AMC date
+            Notification::send($users, new UpcomingAMCNotification($project));
+            
+            if ($project->next_amc_date->toDateString() === $today) {
+                $this->createAutomatedInvoice($project);
+            }
+        }
+    }
+    
     /**
-     * Update the project's next AMC date using the invoice date and the project's AMC duration.
-     *
-     * If the project exists and has a positive amc_durations_month value and the invoice has an invoice_date,
-     * this method calculates the next AMC date by adding the configured months to the invoice date and
-     * persists the next_amc_date on the related project.
+     * Creates an invoice from a Project object.
+     */
+    public function createAutomatedInvoice(Project $project): void
+    {
+        $amount = ($project->initial_value > 0 && $project->amc_percentage > 0) 
+            ? ($project->initial_value * ($project->amc_percentage / 100)) 
+            : 0;
+
+        AMCInvoice::create([
+            'project_id'   => $project->id,
+            'invoice_no'   => 'AUTO-' . now()->format('Ymd') . '-' . Str::upper(Str::random(4)),
+            'amount'       => $amount,
+            'description'  => "System Generated AMC Invoice for " . $project->project_name,
+            'invoice_date' => now(),
+            'due_date'     => now(),
+            'status'       => AMCInvoice::STATUS_PENDING,
+        ]);
+    }
+
+    /**
+     * Update the project's next AMC date.
      *
      * @param AMCInvoice $amcInvoice
      * @return void
@@ -99,9 +139,11 @@ class AMCInvoiceTableService
             $invoiceDate = Carbon::parse($amcInvoice->invoice_date);
             $nextAmcDate = $invoiceDate->copy()->addMonths((int) $project->amc_durations_month);
 
-            // Persist in Y-m-d format (adjust if your column expects a Carbon/Date object)
             $project->next_amc_date = $nextAmcDate->format('Y-m-d');
+            
             $project->save();
         }
     }
+
+    
 }

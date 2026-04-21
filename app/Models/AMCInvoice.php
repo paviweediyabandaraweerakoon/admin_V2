@@ -19,6 +19,8 @@ class AMCInvoice extends Model
 {
     use SoftDeletes, LogsActivityTrait, SearchableTrait;
 
+    protected $table = 'amc_invoices';
+
     public const STATUS_PENDING = 'pending';
     public const STATUS_PAID = 'paid';
     public const STATUS_CANCELLED = 'cancelled';

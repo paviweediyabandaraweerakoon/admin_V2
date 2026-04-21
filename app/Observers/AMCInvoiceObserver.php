@@ -1,24 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Observers;
 
 use App\Models\AMCInvoice;
-use Illuminate\Support\Facades\Auth;
 use App\Services\AMCInvoiceTableService;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Class AMCInvoiceObserver
  *
- * Observes AMCInvoice model events to automatically set created_by and updated_by fields.
+ * Observes AMCInvoice model events and delegates business logic to the service layer.
  */
 class AMCInvoiceObserver
 {
-    protected $amcInvoiceService;
+    /**
+     * @param AMCInvoiceTableService $amcInvoiceService
+     */
+    public function __construct(
+        protected AMCInvoiceTableService $amcInvoiceService
+    ) {}
 
-    // Dependency injection of the AMCInvoiceTableService to handle business logic related to AMC invoices.
-    public function __construct(AMCInvoiceTableService $amcInvoiceService)
+    /**
+     * Handle the AMCInvoice "creating" event.
+     */
+    public function creating(AMCInvoice $amcInvoice): void
     {
-        $this->amcInvoiceService = $amcInvoiceService;
+        if (Auth::check()) {
+            $amcInvoice->created_by = Auth::id();
+        }
     }
 
     /**
@@ -32,21 +43,11 @@ class AMCInvoiceObserver
     }
 
     /**
-     * Handle the AMCInvoice "creating" event.
-     */
-    public function creating(AMCInvoice $amcInvoice): void
-    {
-        if (Auth::check()) {
-            $amcInvoice->created_by = Auth::id();
-        }
-    }
-
-    /**
      * Handle the AMCInvoice "created" event.
      */
     public function created(AMCInvoice $amcInvoice): void
     {
-
+        // Use service to update project next amc date
         $this->amcInvoiceService->updateProjectNextAmcDate($amcInvoice);
     }
 
@@ -55,8 +56,8 @@ class AMCInvoiceObserver
      */
     public function updated(AMCInvoice $amcInvoice): void
     {
+        // Only update if invoice_date was changed
         if ($amcInvoice->wasChanged('invoice_date')) {
-        
             $this->amcInvoiceService->updateProjectNextAmcDate($amcInvoice);
         }
     }
