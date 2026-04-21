@@ -145,5 +145,12 @@ class AMCInvoiceTableService
         }
     }
 
+    /**
+     * Get active projects for the dropdown.
+    */
     
+    public function getActiveProjects()
+    {
+        return \App\Models\Project::active()->get();
+        }
 }

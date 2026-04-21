@@ -68,8 +68,11 @@ Route::middleware('auth','enabled_entities','user_expired','password_expired')->
      * Includes standard resource routes (excluding views) and 
      * a specific endpoint for DataTables JSON responses.
     */
+    
     Route::resource('customers', CustomerController::class)->except('create', 'show', 'edit');
-Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.table.data');    /**
+Route::get('customers/table/data', [CustomerController::class, 'tableData'])->name('customers.table.data');    
+
+    /**
      * Project Management Routes
      * - Standard resource routes (excluding views)
      * - DataTables endpoint for JSON data
@@ -83,13 +86,11 @@ Route::get('customers/table/data', [CustomerController::class, 'tableData'])->na
      * - DataTables endpoint for JSON data
      * - Endpoint for manual AMC invoice generation
      */
-    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit');
+    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit', 'store');
     Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.data');
-    Route::post('/amc-invoices/store', [AMCInvoiceController::class, 'store'])->name('amc-invoices.store');
-
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/customers', [ReportController::class, 'customer'])->name('reports.customer');
     Route::get('/reports/projects', [ReportController::class, 'project'])->name('reports.project');
-    Route::get('/reports/amc-invoice', [ReportController::class, 'amcInvoice'])->name('reports.amcInvoice');
+    Route::get('/reports/amc-invoice', [ReportController::class, 'amcInvoice'])->name('reports.amc-invoice');
 
 });

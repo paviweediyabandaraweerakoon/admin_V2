@@ -2,29 +2,46 @@
     <input type="hidden" name="id" class="id">
 @endif
 
-<div class="row">
-    <div class="col-md-12 form-group">
-        <label>Select Project <span class="text-danger">*</span></label>
-        <select name="project_id" class="form-control select2 project_id" required>
-            <option value="">-- Select Project --</option>
-            @foreach($projects as $project)
-                <option value="{{ $project->id }}">{{ $project->project_name }} ({{ $project->customer?->company_name ?? 'N/A' }})</option>
-            @endforeach
-        </select>
+<div class="form-group">
+    {{-- Project Selection --}}
+    <div class="row mb-1">
+        <div class="col-md-3 text-right mt-2">
+            <label>Project Name</label>
+        </div>
+        <div class="col-md-9">
+            <input type="text" class="form-control project_name_display" 
+                   value="{{ $invoice->project?->project_name ?? '' }}" readonly>
+            <input type="hidden" name="project_id" class="project_id" 
+                   value="{{ $invoice->project_id ?? '' }}">
+        </div>
     </div>
 
-    <div class="col-md-12 form-group">
-        <label>Description</label>
-        <textarea name="description" class="form-control description" rows="2"></textarea>
+    <div class="row mb-1">
+        <div class="col-md-3 text-right mt-2">
+            <label>Description</label>
+        </div>
+        <div class="col-md-9">
+            <textarea name="description" class="form-control description" rows="2">{{ $invoice->description ?? '' }}</textarea>
+        </div>
     </div>
 
-    <div class="col-md-6 form-group">
-        <label>Invoice Date</label>
-        <input type="date" name="invoice_date" class="form-control invoice_date" value="{{ now()->format('Y-m-d') }}">
+    <div class="row mb-1">
+        <div class="col-md-3 text-right mt-2">
+            <label>Invoice Date</label>
+        </div>
+        <div class="col-md-9">
+            <input type="date" name="invoice_date" class="form-control invoice_date"
+                   value="{{ isset($invoice) && $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : now()->format('Y-m-d') }}">
+        </div>
     </div>
 
-    <div class="col-md-6 form-group">
-        <label>Due Date</label>
-        <input type="date" name="due_date" class="form-control due_date" value="{{ now()->addDays(14)->format('Y-m-d') }}">
+    <div class="row mb-1">
+        <div class="col-md-3 text-right mt-2">
+            <label>Due Date</label>
+        </div>
+        <div class="col-md-9">
+            <input type="date" name="due_date" class="form-control due_date"
+                   value="{{ isset($invoice) && $invoice->due_date ? $invoice->due_date->format('Y-m-d') : now()->addDays(14)->format('Y-m-d') }}">
+        </div>
     </div>
 </div>
