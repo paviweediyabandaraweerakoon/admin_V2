@@ -32,39 +32,17 @@ class GenerateAMCInvoices extends Command
      */
     public function handle(AMCInvoiceTableService $amcService): int
     {
-        $currentTime = now()->toDateTimeString();
-        $this->info('--- AMC Automation Process Started at ' . $currentTime . ' ---');
-
-        // 1. Send Reminders (7 days before and on the day)
-        $this->info('Step 1: Checking for upcoming AMC reminders...');
+        $this->info('--- AMC Automation Process Started at ' . now()->toDateTimeString() . ' ---');
         try {
-            $amcService->sendUpcomingAMCReminders();
-            $this->info('Reminders processed successfully.');
+            // Send reminders for projects with AMC due in 7 days and today
+            $amcService->processAmcAutomation();
+
+            $this->info('AMC Reminders and Invoices processed successfully.');
         } catch (Exception $e) {
-            $this->error('Failed to send reminders: ' . $e->getMessage());
+            $this->error('Automation failed: ' . $e->getMessage());
+            return 1; // Return non-zero exit code on failure
         }
-
-        $this->line(''); 
-
-        // 2. Generate Invoices (Due today)
-        $this->info('Step 2: Checking for projects requiring invoice generation today...');
-
-        $projects = $amcService->getProjectsDueForInvoice();
-
-        if ($projects->isEmpty()) {
-            $this->comment('No projects found for AMC generation today.');
-        } else {
-            foreach ($projects as $project) {
-                try {
-                    $amcService->createAutomatedInvoice($project);
-                    $this->info("Generated invoice for: {$project->project_name}");
-                } catch (Exception $e) {
-                    $this->error("Failed for Project ID {$project->id}: {$e->getMessage()}");
-                }
-            }
-        }
-
-        $this->info('--- AMC Automation Process Completed ---');
-        return 0;
+        $this->info('--- AMC Automation Process Completed at ' . now()->toDateTimeString() . ' ---');
+        return 0; // Return zero exit code on success
     }
 }

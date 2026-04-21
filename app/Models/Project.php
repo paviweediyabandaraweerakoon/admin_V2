@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-
 /**
  * Project Model
  * Represents the 'projects' table and its relationships.
@@ -45,18 +44,6 @@ class Project extends Model
         'created_at'     => 'datetime',
         'updated_at'     => 'datetime',
     ];
-
-    /**
-     * The "booted" method of the model.
-     * Ensures the next AMC date is calculated automatically before saving.
-     */
-    protected static function booted(): void
-    {
-        static::saving(function (Project $project) {
-            // Calculate the next AMC date based on the launch date and AMC duration
-            $project->next_amc_date = $project->calculateNextAmcDate();
-        });
-    }
 
     /**
      * Relationship: A project belongs to a customer.
