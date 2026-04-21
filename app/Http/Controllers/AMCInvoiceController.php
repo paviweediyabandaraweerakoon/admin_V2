@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Http\Controllers;
 
 use App\Models\Project;
@@ -24,37 +22,12 @@ class AMCInvoiceController extends Controller
     /**
      * Display the AMC invoice index page.
      */
-    public function index(): View
+    public function index(AMCInvoiceTableService $service): View
     {
         // Scope for Active projects only
-        $projects = Project::active()->get();
+        $projects = $service->getActiveProjects();
+        
         return view('administration.amc-invoices.index', compact('projects'));
-    }
-
-    /**
-     * Remove the specified AMC invoice from storage.
-     * * Added manual activity log to fix missing log issue.
-     */
-    public function destroy(AMCInvoice $amcInvoice): JsonResponse
-    {
-        try {
-            $invoiceNo = $amcInvoice->invoice_no;
-            
-
-            // Activity log for deletion record
-            activity()
-                ->performedOn($amcInvoice)
-                ->causedBy(Auth::user())
-                ->withProperties(['invoice_no' => $invoiceNo])
-                ->log("AMC Invoice {$invoiceNo} was deleted.");
-
-            $amcInvoice->delete();
-
-            return $this->sendResponse([], 'Invoice deleted successfully!');
-        } catch (Exception $e) {
-            Log::error('AMC Invoice Deletion Failed: ' . $e->getMessage());
-            return $this->sendError('Error deleting invoice');
-        }
     }
 
     /**
