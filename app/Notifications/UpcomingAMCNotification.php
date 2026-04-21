@@ -31,11 +31,15 @@ class UpcomingAMCNotification extends Notification
     // Define the email representation of the notification
     public function toMail($notifiable): MailMessage
     {
+        $date = $this->project->next_amc_date 
+                ? $this->project->next_amc_date->format('Y-m-d') 
+                : 'Not Set';
+
         return (new MailMessage)
             ->subject('Upcoming AMC Alert: ' . $this->project->project_name)
             ->greeting('Hello!')
             ->line('This is a reminder regarding the upcoming AMC for the project: ' . $this->project->project_name)
-            ->line('Next AMC Date: ' . $this->project->next_amc_date->format('Y-m-d'))
+            ->line('Next AMC Date: ' . $date)
             ->action('View Project Details', url('/projects/' . $this->project->id))
             ->line('Please ensure all requirements are met for the upcoming invoice generation.');
     }

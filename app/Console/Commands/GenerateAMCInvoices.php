@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
@@ -34,9 +32,10 @@ class GenerateAMCInvoices extends Command
      */
     public function handle(AMCInvoiceTableService $amcService): int
     {
-        $this->info('--- AMC Automation Process Started ---');
+        $currentTime = now()->toDateTimeString();
+        $this->info('--- AMC Automation Process Started at ' . $currentTime . ' ---');
 
-        // 1. Send Reminders (7 days before)
+        // 1. Send Reminders (7 days before and on the day)
         $this->info('Step 1: Checking for upcoming AMC reminders...');
         try {
             $amcService->sendUpcomingAMCReminders();
@@ -49,13 +48,8 @@ class GenerateAMCInvoices extends Command
 
         // 2. Generate Invoices (Due today)
         $this->info('Step 2: Checking for projects requiring invoice generation today...');
-        
-        $projects = Project::active()
-            ->whereDate('next_amc_date', now()->toDateString())
-            ->whereDoesntHave('amcInvoices', function ($query) {
-                $query->whereDate('invoice_date', now()->toDateString());
-            })
-            ->get();
+
+        $projects = $amcService->getProjectsDueForInvoice();
 
         if ($projects->isEmpty()) {
             $this->comment('No projects found for AMC generation today.');
@@ -63,7 +57,7 @@ class GenerateAMCInvoices extends Command
             foreach ($projects as $project) {
                 try {
                     $amcService->createAutomatedInvoice($project);
-                    $this->line("<info>Generated invoice for:</info> {$project->project_name}");
+                    $this->info("Generated invoice for: {$project->project_name}");
                 } catch (Exception $e) {
                     $this->error("Failed for Project ID {$project->id}: {$e->getMessage()}");
                 }
