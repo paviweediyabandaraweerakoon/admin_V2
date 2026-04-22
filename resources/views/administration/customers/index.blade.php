@@ -59,7 +59,7 @@
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-3">
-                    <form method="POST" id="customerCreateForm">
+                    <form method="POST" action="{{ route('customers.store') }}" id="customerCreateForm">
                         @csrf
                         @include('administration.customers.form', [
                             'editable' => false,
@@ -130,6 +130,59 @@
 
             FormOptions.initValidation('customerCreateForm', [], 'select2');
             FormOptions.initValidation('customerEditForm', [], 'select2');
+
+            // Edit Button Click Handler
+            $(document).on('click', '.customer-edit-btn', function () {
+                edit(this);
+            });
+
+            // Delete Button Click Handler
+            $(document).on('click', '.customer-delete-btn', function () {
+                let url = $(this).data('url');
+                let name = $(this).data('name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete \"" + name + "\"? This cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value || result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE', 
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                $('#dataTable').DataTable().ajax.reload(null, false);
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Customer has been deleted.',
+                                    icon: 'success',
+                                    showConfirmButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary px-4',
+                                    }
+                                });
+                                
+                            },
+                            error: function (xhr) {
+                                NotificationOptions.showNotification({
+                                    type: 'error',
+                                    title: 'Failed!',
+                                    message: 'Could not delete customer.'
+                                });
+                            }
+                      });
+                    }
+                });
+            });
         });
 
         function edit(result) {

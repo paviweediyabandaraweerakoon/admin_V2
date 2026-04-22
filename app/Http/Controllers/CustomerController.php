@@ -99,13 +99,21 @@ class CustomerController extends Controller
      * @return JsonResponse
      */
 
-    public function destroy(Customer $customer): JsonResponse
+    public function destroy(Customer $customer, CustomerTableService $service): JsonResponse
     {
         try {
-            $customer->delete();
+            $service->deleteCustomer($customer);
 
             return $this->sendResponse(null, 'Customer deleted successfully');
         } catch (Exception $e) {
+            // Log detailed error information for debugging
+            Log::error('Customer delete failed', [
+                'user_id' => Auth::id(),
+                'customer_id' => $customer->id,
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+            ]);
             return $this->sendError('Delete failed', [$e->getMessage()]);
         }
     }
@@ -124,5 +132,4 @@ class CustomerController extends Controller
 
         return response()->json($data);
     }
-
 }
