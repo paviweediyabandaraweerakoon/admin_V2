@@ -12,6 +12,14 @@ use Illuminate\Support\Facades\Auth;
  */
 class ProjectTableService
 {
+    /**
+     * Delete a project record.
+     */
+    public function deleteProject(Project $project): bool
+    {
+        return (bool) $project->delete();
+    }
+
     public function getTableData(array $requestData): array
     {
         $user = Auth::user();
@@ -38,18 +46,38 @@ class ProjectTableService
         $data = [];
         foreach ($projects as $project) {
             $url = "/projects/{$project->id}";
+
+            // Edit button with permission check
             $edit_btn = $user?->can('projects edit')
-                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary project-edit-btn' data-id='{$project->id}' data-url='{$url}' data-name='".e($project->project_name)."' data-customer='{$project->customer_id}' data-status='{$project->status}' data-value='{$project->initial_value}' data-launch='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."'></i>"
+                ? "<a class='project-edit-btn text-primary py-0 px-1'
+                    data-id='{$project->id}' 
+                    data-url='{$url}' 
+                    data-project_name='".e($project->project_name)."' 
+                    data-customer_id='{$project->customer_id}' 
+                    data-status='{$project->status}' 
+                    data-initial_value='{$project->initial_value}' 
+                    data-launch_date='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."'>
+                        <i class='far fa-edit tx-16'></i>
+                    </a>"
                 : "";
 
+            // Delete button with permission check
+
             $delete_btn = $user?->can('projects delete')
-                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger project-delete-btn' data-id='{$project->id}' data-url='{$url}'></i>"
+                ? "<a class='project-delete-btn text-danger py-0 px-1 mg-l-5'
+                    data-id='{$project->id}'
+                    data-url='{$url}'
+                    data-name='".e($project->project_name)."'>
+                    <i class='far fa-trash-alt tx-16'></i>
+                </a>"
                 : "";
 
             $data[] = [
                 e($project->project_name),
                 e($project->customer?->company_name ?? 'N/A'),
-                '<span class="badge badge-info">' . ucfirst(e($project->status)) . '</span>',
+                $project->status
+                    ? '<span class="badge badge-success">Active</span>'
+                    : '<span class="badge badge-danger">Inactive</span>',
                 number_format((float)$project->initial_value, 2),
                 $project->launch_date ? $project->launch_date->format('Y-m-d') : '-',
                 $edit_btn . $delete_btn
