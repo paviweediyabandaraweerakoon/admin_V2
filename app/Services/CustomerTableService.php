@@ -49,7 +49,7 @@ class CustomerTableService
 
             // Edit Button - only show if user has edit permission
             $edit_btn = $user?->can('customers edit')
-                ? "<a href='javascript:void(0)' class='customer-edit-btn text-primary py-0 px-1'
+                ? "<a class='customer-edit-btn text-primary py-0 px-1'
                     data-id='{$customer->id}'
                     data-company_name='".e($customer->company_name)."'
                     data-phone='".e($customer->phone)."' 
@@ -60,7 +60,7 @@ class CustomerTableService
 
             // Delete Button - only show if user has delete permission
             $delete_btn = $user?->can('customers delete')
-                ? "<a href='javascript:void(0)' class='customer-delete-btn text-danger py-0 px-1 mg-l-5'
+                ? "<a class='customer-delete-btn text-danger py-0 px-1 mg-l-5'
                     data-id='{$customer->id}' 
                     data-url='{$url}' 
                     data-name='".e($customer->company_name)."'>
