@@ -22,6 +22,7 @@ class AMCInvoiceController extends Controller
     /**
      * Display the AMC invoice index page.
      */
+    
     public function index(AMCInvoiceTableService $service): View
     {
         // Scope for Active projects only

@@ -96,13 +96,13 @@ class ProjectController extends Controller
      * @return JsonResponse
      */
 
-    public function destroy(Project $project): JsonResponse
-    {
+    public function destroy(Project $project, ProjectTableService $service): JsonResponse {
+        
         try {
-            $project->delete();
-
-            return $this->sendResponse(null, 'Project deleted successfully');
+           $service->deleteProject($project);
+           return $this->sendResponse(null, 'Project deleted successfully');
         } catch (Exception $e) {
+            Log::error('Project delete failed', ['id' => $project->id, 'error' => $e->getMessage()]);
             return $this->sendError('Delete failed', [$e->getMessage()]);
         }
     }

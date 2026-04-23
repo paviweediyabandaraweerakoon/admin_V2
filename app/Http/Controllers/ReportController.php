@@ -14,34 +14,6 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     /**
-     * Display the main reports dashboard with available report types.
-     * * @return View
-     */
-    public function index(): View
-    {
-        // Define available reports dynamically for the dashboard view
-        $reports = [
-            [
-                'title'       => 'Customer Reports',
-                'description' => 'View and export customer-level reporting summaries.',
-                'route'       => 'reports.customer',
-            ],
-            [
-                'title'       => 'Project Reports',
-                'description' => 'View and export project-level reporting summaries.',
-                'route'       => 'reports.project',
-            ],
-            [
-                'title'       => 'AMC Invoice Reports',
-                'description' => 'View and export AMC invoice reporting summaries.',
-                'route'       => 'reports.amc-invoice',
-            ],
-        ];
-
-        return view('administration.reports.index', compact('reports'));
-    }
-
-    /**
      * Display the customer-specific reporting page.
      * * @return View
      */

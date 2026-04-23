@@ -60,7 +60,7 @@
                     </button>
                 </div>
                 <div class="modal-body mt-3 mb-3">
-                    <form method="POST" id="projectCreateForm">
+                    <form method="POST" action="{{ route('projects.store') }}" id="projectCreateForm">
                         @csrf
                         @include('administration.projects.form', [
                             'editable' => false,
@@ -132,9 +132,60 @@
             });
 
             // Form Validations
-            FormOptions.initValidation('projectCreateForm', []);
-            FormOptions.initValidation('projectEditForm', []);
-        });
+            FormOptions.initValidation('projectCreateForm', [], 'select2');
+            FormOptions.initValidation('projectEditForm', [], 'select2');});
+
+            // Edit button click handler
+            $(document).on('click', '.project-edit-btn', function () {
+                edit(this);
+            });
+
+            $(document).on('click', '.project-delete-btn', function () {
+                let url = $(this).data('url');
+                let name = $(this).data('name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete \"" + name + "\"? This cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value || result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            data: { 
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                $('#projectDataTable').DataTable().ajax.reload(null, false);
+
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Project has been deleted successfully.',
+                                    showConfirmButton: true,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'OK',
+                                    customClass: {
+                                        confirmButton: 'btn btn-primary px-4',
+                                    }
+                                });
+
+                            },
+                            error: function (xhr) {
+                                NotificationOptions.showNotification({
+                                    type: 'error',
+                                    title: 'Delete Failed',
+                                    message: 'Could not delete project. Please try again.'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
 
         function edit(result) {
             let id = result.dataset.id;

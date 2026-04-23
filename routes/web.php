@@ -81,16 +81,18 @@ Route::get('customers/table/data', [CustomerController::class, 'tableData'])->na
     Route::get('projects/table/data', [ProjectController::class, 'tableData'])->name('projects.data');
 
     /**
-     * AMC Invoice Routes
-     * - Standard resource routes (excluding views)
-     * - DataTables endpoint for JSON data
-     * - Endpoint for manual AMC invoice generation
+     * Reports Management Routes
+     * Navigation for specific reporting modules.
      */
-    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit', 'store');
-    Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.data');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/customers', [ReportController::class, 'customer'])->name('reports.customer');
-    Route::get('/reports/projects', [ReportController::class, 'project'])->name('reports.project');
-    Route::get('/reports/amc-invoice', [ReportController::class, 'amcInvoice'])->name('reports.amc-invoice');
+    Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
+        Route::get('/customers', [ReportController::class, 'customer'])->name('customer');
+        Route::get('/index', [ReportController::class, 'customer'])->name('index');
 
+        Route::get('/projects', [ReportController::class, 'project'])->name('project');
+        Route::get('/amc-invoice', [ReportController::class, 'amcInvoice'])->name('amc-invoice');
+    });
+
+    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit', 'store');
+    Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.tableData');
+    
 });
