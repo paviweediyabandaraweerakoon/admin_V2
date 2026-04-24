@@ -33,10 +33,7 @@
                             <tr>
                                 <th>Invoice No</th>
                                 <th>Project</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Invoice Date</th>
-                                <th>Due Date</th>
+                                <th>Customer</th> <th>Amount</th>   <th>Status</th>   <th>Invoice Date</th> <th>Due Date</th>     <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>

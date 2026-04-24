@@ -9,6 +9,7 @@ use App\Traits\SearchableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * AMCInvoice Model
@@ -57,5 +58,15 @@ class AMCInvoice extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    /**
+     * Scope for DataTables Pagination & Ordering
+     */
+    public function scopeTableData(Builder $query, string $order_column, string $order_by_str, int $start, int $length): Builder
+    {
+        return $query->orderBy($order_column, $order_by_str)
+            ->offset($start)
+            ->limit($length);
     }
 }

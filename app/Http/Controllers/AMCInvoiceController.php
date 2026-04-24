@@ -39,4 +39,5 @@ class AMCInvoiceController extends Controller
         $data = $service->getTableData($request->all());
         return response()->json($data);
     }
+
 }
