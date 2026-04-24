@@ -50,19 +50,21 @@ class ProjectTableService
             // Edit button with permission check
             $edit_btn = $user?->can('projects edit')
                 ? "<a class='project-edit-btn text-primary py-0 px-1'
-                    data-id='{$project->id}' 
-                    data-url='{$url}' 
-                    data-project_name='".e($project->project_name)."' 
-                    data-customer_id='{$project->customer_id}' 
-                    data-status='{$project->status}' 
-                    data-initial_value='{$project->initial_value}' 
-                    data-launch_date='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."'>
-                        <i class='far fa-edit tx-16'></i>
-                    </a>"
-                : "";
-
+                   data-id='{$project->id}' 
+                   data-url='{$url}' 
+                   data-project_name='".e($project->project_name)."' 
+                   data-customer_id='{$project->customer_id}' 
+                   data-status='{$project->status}' 
+                   data-initial_value='{$project->initial_value}' 
+                   data-amc_percentage='{$project->amc_percentage}' 
+                   data-amc_durations_month='{$project->amc_durations_month}' 
+                   data-launch_date='".($project->launch_date ? $project->launch_date->format('Y-m-d') : "")."' 
+                   data-description='".e($project->description)."'>
+                   <i class='far fa-edit tx-16'></i>
+                   </a>"
+                   : "";
+            
             // Delete button with permission check
-
             $delete_btn = $user?->can('projects delete')
                 ? "<a class='project-delete-btn text-danger py-0 px-1 mg-l-5'
                     data-id='{$project->id}'
@@ -72,12 +74,18 @@ class ProjectTableService
                 </a>"
                 : "";
 
-            $data[] = [
+                $statusBadge = match($project->status) {
+                    'active' => '<span class="badge badge-success">Active</span>',
+                    'inactive' => '<span class="badge badge-danger">Inactive</span>',
+                    'completed' => '<span class="badge badge-info">Completed</span>',
+                    'on-hold' => '<span class="badge badge-warning">On Hold</span>',
+                    default => '<span class="badge badge-secondary">Unknown</span>',
+                };
+
+                $data[] = [
                 e($project->project_name),
                 e($project->customer?->company_name ?? 'N/A'),
-                $project->status
-                    ? '<span class="badge badge-success">Active</span>'
-                    : '<span class="badge badge-danger">Inactive</span>',
+                $statusBadge,
                 number_format((float)$project->initial_value, 2),
                 $project->launch_date ? $project->launch_date->format('Y-m-d') : '-',
                 $edit_btn . $delete_btn

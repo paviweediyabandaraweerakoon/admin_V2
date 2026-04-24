@@ -202,7 +202,7 @@
             $("#projectEditForm").find('.project_name').val(project_name);
             $("#projectEditForm").find('.customer_id').val(customer_id).trigger('change');
             $("#projectEditForm").find('.initial_value').val(initial_value);
-            $("#projectEditForm").find('.status').val(status);
+            $("#projectEditForm").find('.status').val(status).trigger('change');
             $("#projectEditForm").find('.amc_percentage').val(amc_percentage);
             $("#projectEditForm").find('.amc_durations_month').val(amc_durations_month);
             $("#projectEditForm").find('.launch_date').val(launch_date);

@@ -74,7 +74,6 @@ class AMCInvoiceTableService
                 $edit_btn . $delete_btn
             ];
         }
-
         return [
             "draw" => intval($requestData['draw'] ?? 0),
             "recordsTotal" => $recordsTotal,
@@ -124,7 +123,7 @@ class AMCInvoiceTableService
             'status'       => AMCInvoice::STATUS_PENDING,
         ]);
     }
-
+    
     /**
      * Update the project's next AMC date.
      *
