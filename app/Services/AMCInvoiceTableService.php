@@ -89,14 +89,17 @@ class AMCInvoiceTableService
         
         // Fetch projects with next AMC date today or within the next 7 days
         $projects = Project::active()
-        ->whereIn('next_amc_date', [$today, $sevenDaysLater])
+        ->where(function ($query) use ($today, $sevenDaysLater) {
+            $query->whereDate('next_amc_date', $today)
+                    ->orWhereDate('next_amc_date', $sevenDaysLater);
+        })
         ->get();
         
         $users = User::all(); 
         
         foreach ($projects as $project) {
             // Send notification to users about the upcoming AMC date
-            Notification::send($users, new UpcomingAMCNotification($project));
+           // Notification::send($users, new UpcomingAMCNotification($project));
             
             if ($project->next_amc_date->toDateString() === $today) {
                 $this->createAutomatedInvoice($project);

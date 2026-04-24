@@ -10,7 +10,7 @@ class ProjectObserver
     public function saving(Project $project): void
     {
         if ($project->isDirty(['launch_date', 'amc_durations_month'])) {
-            $project->calculateNextAmcDate();
+            $project->next_amc_date = $project->calculateNextAmcDate();
         }
     }
     /**
