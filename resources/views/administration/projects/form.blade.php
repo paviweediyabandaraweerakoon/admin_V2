@@ -48,7 +48,6 @@
                 @php $currentStatus = old('status', $project->status ?? ''); @endphp
                 <option value="active" {{ $currentStatus == 'active' ? 'selected' : '' }}>Active</option>
                 <option value="inactive" {{ $currentStatus == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                <option value="completed" {{ $currentStatus == 'completed' ? 'selected' : '' }}>Completed</option>
                 <option value="on-hold" {{ $currentStatus == 'on-hold' ? 'selected' : '' }}>On Hold</option>
             </select>
         </div>
