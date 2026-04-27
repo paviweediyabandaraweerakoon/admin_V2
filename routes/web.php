@@ -92,7 +92,7 @@ Route::get('customers/table/data', [CustomerController::class, 'tableData'])->na
         Route::get('/amc-invoice', [ReportController::class, 'amcInvoice'])->name('amc-invoice');
     });
 
-    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit', 'store');
+    Route::resource('amc-invoices', AMCInvoiceController::class)->except('create', 'show', 'edit', 'store', 'destroy');
     Route::get('amc-invoices/table/data', [AMCInvoiceController::class, 'tableData'])->name('amc-invoices.tableData');
     
 });

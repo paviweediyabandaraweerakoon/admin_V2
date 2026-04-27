@@ -38,10 +38,10 @@
                                 <th>Invoice #</th>
                                 <th>Project</th>
                                 <th>Customer</th>
-                                <th>Amount</th>
-                                <th>Status</th>
+                                <th>AMC Amount</th>
+                                <th>Payment Status</th>
                                 <th>Invoice Date</th>
-                                <th>Due Date</th>
+                                <th>Payment Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -82,10 +82,10 @@
                 { data: 0 }, // Invoice #
                 { data: 1 }, // Project
                 { data: 2 }, // Customer
-                { data: 3 }, // Amount
-                { data: 4 }, // Status
+                { data: 3 }, // AMC Amount
+                { data: 4 }, //  Payment Status
                 { data: 5 }, // Invoice Date
-                { data: 6 }, // Due Date
+                { data: 6 }, // Payment Date
                 { data: 7, orderable: false, searchable: false } //Action Buttons (Edit/Delete)
             ],
             

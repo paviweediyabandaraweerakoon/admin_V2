@@ -50,11 +50,15 @@ class AMCInvoiceTableService
         foreach ($invoices as $invoice) {
             $url = "/amc-invoices/{$invoice->id}";
             $edit_btn = $user?->can('amc-invoices edit')
-                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary amc-invoice-edit-btn' data-id='{$invoice->id}' data-url='{$url}' data-invoice-no='".e($invoice->invoice_no)."' data-project='{$invoice->project_id}' data-amount='{$invoice->amount}' data-status='{$invoice->status}' data-invoice-date='".($invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : "")."' data-due-date='".($invoice->due_date ? $invoice->due_date->format('Y-m-d') : "")."'></i>"
-                : "";
-
-            $delete_btn = $user?->can('amc-invoices delete')
-                ? "<i title='Delete' class='fas fa-trash-alt cursor-pointer text-danger amc-invoice-delete-btn' data-id='{$invoice->id}' data-url='{$url}'></i>"
+                ? "<i title='Edit' class='fas fa-edit mr-3 cursor-pointer text-primary amc-invoice-edit-btn' 
+                data-id='{$invoice->id}' 
+                data-url='{$url}' 
+                data-invoice-no='".e($invoice->invoice_no)."' 
+                data-project='{$invoice->project_id}' 
+                data-amount='{$invoice->amount}' 
+                data-status='{$invoice->status}' 
+                data-invoice-date='".($invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : "")."'
+                data-payment-date='".($invoice->due_date ? $invoice->due_date->format('Y-m-d') : "")."'></i>"
                 : "";
 
             $statusBadge = match($invoice->status) {
@@ -71,7 +75,7 @@ class AMCInvoiceTableService
                 $statusBadge,
                 $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : '-',
                 $invoice->due_date ? $invoice->due_date->format('Y-m-d') : '-',
-                $edit_btn . $delete_btn
+                $edit_btn
             ];
         }
         return [
