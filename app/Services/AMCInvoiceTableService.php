@@ -31,7 +31,7 @@ class AMCInvoiceTableService
         $start = (int) ($requestData['start'] ?? 0);
         $length = (int) ($requestData['length'] ?? 10);
 
-        $columns = ['id', 'invoice_no', 'project_id', 'amount', 'status', 'invoice_date', 'due_date'];
+        $columns = ['id', 'invoice_no', 'project_id', 'amount', 'status', 'invoice_date', 'paid_at'];
         $order_column = $columns[$requestData['order'][0]['column'] ?? 0] ?? 'id';
         $order_dir = $requestData['order'][0]['dir'] ?? 'desc';
 
@@ -58,7 +58,7 @@ class AMCInvoiceTableService
                 data-amount='{$invoice->amount}' 
                 data-status='{$invoice->status}' 
                 data-invoice-date='".($invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : "")."'
-                data-payment-date='".($invoice->due_date ? $invoice->due_date->format('Y-m-d') : "")."'></i>"
+                data-payment-date='".($invoice->paid_at ? $invoice->paid_at->format('Y-m-d') : "")."'></i>"
                 : "";
 
             $statusBadge = match($invoice->status) {
@@ -74,7 +74,7 @@ class AMCInvoiceTableService
                 number_format((float)$invoice->amount, 2),
                 $statusBadge,
                 $invoice->invoice_date ? $invoice->invoice_date->format('Y-m-d') : '-',
-                $invoice->due_date ? $invoice->due_date->format('Y-m-d') : '-',
+                $invoice->paid_at ? $invoice->paid_at->format('Y-m-d') : '-',
                 $edit_btn
             ];
         }
@@ -103,7 +103,7 @@ class AMCInvoiceTableService
         
         foreach ($projects as $project) {
             // Send notification to users about the upcoming AMC date
-           // Notification::send($users, new UpcomingAMCNotification($project));
+            Notification::send($users, new UpcomingAMCNotification($project));
             
             if ($project->next_amc_date->toDateString() === $today) {
                 $this->createAutomatedInvoice($project);
@@ -126,7 +126,7 @@ class AMCInvoiceTableService
             'amount'       => $amount,
             'description'  => "System Generated AMC Invoice for " . $project->project_name,
             'invoice_date' => now(),
-            'due_date'     => now(),
+            'paid_at'     => now(),
             'status'       => AMCInvoice::STATUS_PENDING,
         ]);
     }
@@ -159,4 +159,20 @@ class AMCInvoiceTableService
     {
         return \App\Models\Project::active()->get();
         }
+
+    /**
+     * Invoice update service method
+    */
+public function updateInvoice(
+    AMCInvoice $invoice,
+    array $data
+    ): void {
+
+    // status paid but paid_at is null, set paid_at to today
+    if ($data['status'] !== AMCInvoice::STATUS_PAID) {
+        $data['paid_at'] = null;
+    }
+
+    $invoice->update($data);
+}
 }
