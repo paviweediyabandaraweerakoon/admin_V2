@@ -77,7 +77,6 @@ class ProjectTableService
                 $statusBadge = match($project->status) {
                     'active' => '<span class="badge badge-success">Active</span>',
                     'inactive' => '<span class="badge badge-danger">Inactive</span>',
-                    'completed' => '<span class="badge badge-info">Completed</span>',
                     'on-hold' => '<span class="badge badge-warning">On Hold</span>',
                     default => '<span class="badge badge-secondary">Unknown</span>',
                 };
