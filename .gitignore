@@ -3,6 +3,8 @@
 /public/storage
 /storage/*.key
 
+/public/css
+
 vendor/*
 !vendor/laravel
 vendor/laravel/*
