@@ -53,6 +53,7 @@
             </div>
         </div>
     </div>
+
     <div class="modal fade" id="editAMCInvoiceModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -66,11 +67,13 @@
                 @csrf
                 @method('PUT')
                 <input type="hidden" id="amc_invoice_id">
+                
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Invoice No</label>
-                        <input type="text" id="edit_invoice_no" class="form-control" readonly>
+                        <input type="text" name="invoice_no" id="edit_invoice_no" class="form-control" required>
                     </div>
+
                     <div class="form-group">
                         <label>Status</label>
                         <select name="status" id="edit_status" class="form-control" required>
@@ -79,27 +82,29 @@
                             <option value="cancelled">Cancelled</option>
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label>Invoice Date</label>
                         <input type="date" name="invoice_date" id="edit_invoice_date" class="form-control" required>
                     </div>
+
                     <div class="form-group">
-                        <label>Payment Date</label>
+                        <label>Actual Payment Date</label>
                         <input type="date" name="paid_at" id="edit_paid_at" class="form-control">
                         <small class="text-muted">Required only if status is "Paid"</small>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Update Invoice</button>
                 </div>
-                <div class="form-group">
-                   <input type="text" name="invoice_no" id="edit_invoice_no" class="form-control" required> 
-                
             </form>
         </div>
     </div>
 </div>
+    
+           
 @endsection
 
 @push('scripts')
