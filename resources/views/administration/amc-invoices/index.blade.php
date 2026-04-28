@@ -84,7 +84,7 @@
                         <input type="date" name="invoice_date" id="edit_invoice_date" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Payment Date (Manual)</label>
+                        <label>Payment Date</label>
                         <input type="date" name="paid_at" id="edit_paid_at" class="form-control">
                         <small class="text-muted">Required only if status is "Paid"</small>
                     </div>
