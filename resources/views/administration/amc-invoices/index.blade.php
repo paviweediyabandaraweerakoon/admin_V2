@@ -53,6 +53,53 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="editAMCInvoiceModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Edit AMC Invoice</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editAMCInvoiceForm">
+                @csrf
+                @method('PUT')
+                <input type="hidden" id="amc_invoice_id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Invoice No</label>
+                        <input type="text" id="edit_invoice_no" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" id="edit_status" class="form-control" required>
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Invoice Date</label>
+                        <input type="date" name="invoice_date" id="edit_invoice_date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Date (Manual)</label>
+                        <input type="date" name="paid_at" id="edit_paid_at" class="form-control">
+                        <small class="text-muted">Required only if status is "Paid"</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update Invoice</button>
+                </div>
+                <div class="form-group">
+                   <input type="text" name="invoice_no" id="edit_invoice_no" class="form-control" required> 
+                
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -99,6 +146,48 @@
                 width: '100%'
             });
 
+        });
+        $(document).ready(function() {
+            // Edit AMC Invoice
+            $(document).on('click', '.amc-invoice-edit-btn', function() {
+                let id = $(this).data('id');
+                let url = $(this).data('url');
+
+                //Load data to Modal
+                $('#amc_invoice_id').val(id);
+                $('#edit_invoice_no').val($(this).data('invoice-no'));
+                $('#edit_status').val($(this).data('status'));
+                $('#edit_invoice_date').val($(this).data('invoice-date'));
+                $('#edit_paid_at').val($(this).data('payment-date'));
+                $('#editAMCInvoiceModal').modal('show');
+            });
+            // Form Submit Event
+            $('#editAMCInvoiceForm').on('submit', function(e) {
+                e.preventDefault();
+                let id = $('#amc_invoice_id').val();
+                let formData = $(this).serialize();
+
+                $.ajax({
+                    url: "/amc-invoices/" + id,
+                    type: "POST",
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                        $('#editAMCInvoiceModal').modal('hide');
+                        $('#dataTable').DataTable().ajax.reload();
+                        Swal.fire('Success', response.message, 'success');
+                        }
+            },
+            error: function(xhr) {
+                let errors = xhr.responseJSON.errors;
+                let errorMessages = '';
+                $.each(errors, function(key, value) {
+                    errorMessages += value[0] + '<br>';
+                });
+                Swal.fire('Error', errorMessages, 'error');
+            }
+                });
+            });
         });
     </script>
 @endpush
