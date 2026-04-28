@@ -3,6 +3,11 @@
 /public/storage
 /storage/*.key
 
+/public/css/
+/public/js/
+/public/plugins/
+/public/fonts/
+
 vendor/*
 !vendor/laravel
 vendor/laravel/*
@@ -19,3 +24,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+composer.lock
+package-lock.json
