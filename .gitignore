@@ -5,6 +5,7 @@
 
 /public/css
 /public/js
+/public/plugins
 /public/fonts
 
 vendor/*
