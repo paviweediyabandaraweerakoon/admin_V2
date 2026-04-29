@@ -3,6 +3,11 @@
 /public/storage
 /storage/*.key
 
+/public/css/
+/public/js/
+/public/plugins/
+/public/fonts/
+
 vendor/*
 !vendor/laravel
 vendor/laravel/*
@@ -12,6 +17,7 @@ vendor/laravel/fortify/*
 vendor/laravel/fortify/src/*
 !vendor/laravel/fortify/src/Rules
 
+
 .env
 .env.backup
 .phpunit.result.cache
@@ -19,3 +25,5 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
+composer.lock
+package-lock.json
