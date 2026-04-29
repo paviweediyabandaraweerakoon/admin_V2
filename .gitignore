@@ -4,6 +4,7 @@
 /storage/*.key
 
 /public/css
+/public/js
 
 vendor/*
 !vendor/laravel
